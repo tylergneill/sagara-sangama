@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — Sāgarasaṅgama</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+  <!-- See index.html: same three subsets, since the gloss heading here is
+       Devanagari and the headings carry IAST diacritics. -->
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="./assets/fonts/tiro-devanagari-sanskrit-latin.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="./assets/fonts/tiro-devanagari-sanskrit-latin-ext.woff2" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="./assets/fonts/tiro-devanagari-sanskrit-devanagari.woff2" />
+  <link rel="stylesheet" href="./styles.css" />
+  <script>
+    // Set before first paint, or the page flashes the wrong theme. Light is
+    // the default: a first-time visitor gets it whatever prefers-color-scheme
+    // says, and only a previous explicit choice overrides it. The saved value
+    // is checked against the three known modes, so a stale entry falls back
+    // rather than leaving the page unstyled.
+    (function () {
+      var saved = localStorage.getItem("theme");
+      var theme = ["light", "dark", "wave"].indexOf(saved) >= 0 ? saved : "light";
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+</head>
+<body>
+  <button id="themeToggle" class="theme-toggle" type="button" title="Switch theme: light, dark, wave"></button>
+
+  <!-- Wave mode's drifting scrollwork. Empty in the other two themes, which
+       leave it display:none; the two bands are one tile at different scales
+       and speeds. Decorative, hence aria-hidden. -->
+  <div class="wave-field" aria-hidden="true">
+    <div class="wave-band wave-band--near"></div>
+    <div class="wave-band wave-band--far"></div>
+  </div>
+
+  <div class="about-wrap">
+    <a class="back" href="./index.html">← Home</a>
+
+    <!-- The gloss carries the heading: with "About" gone it is the page's
+         only h1, so the outline keeps a top-level heading. -->
+    <h1 class="gloss">सागरसङ्गमः — “meeting of oceans”</h1>
+
+    <p>
+      Sāgarasaṅgama is a virtual confluence point for large online Sanskrit
+      e-text collections. Each component project gets its own <strong>Atlas</strong>
+      interface, and Sāgarasaṅgama sums over them.
+    </p>
+
+    <h2>Atlas concept</h2>
+    <p>
+      An "atlas" is a navigational layer over a collection someone else hosts.
+      It charts the navigable waters with improved navigation,
+      and it plumbs their depths
+      with sizes, counts, and growth dynamics that the source collection doesn't surface on its own.
+      No Atlas hosts text content of its own, instead linking back to the source.
+    </p>
+
+    <h2>Why Atlases?</h2>
+    <p>
+      These large collections are poorly understood in their entireties
+      because their own web interfaces are at once too bespoke and too limited.
+      By standardizing navigation UX and giving more attention to issues of scope —
+      the added info about sizes, counts, and growth dynamics —
+      users will appreciate these collections at a deeper level and make better use of them day to day.
+    </p>
+    <p>
+      In addition, an Atlas surfaces structural problems in the source collection so that they can be fixed upstream.
+    </p>
+
+    <h2>Saṅgama concept</h2>
+    <p>
+      Any one Atlas can say how large its own collection is,
+      but only the confluence can say how multiple compare,
+      or answer the question a reader arrives with:
+      <em>who if anyone has this text?</em>
+      Sāgarasaṅgama searches titles and authors across all Atlases,
+      charts their scope and growth against each other,
+      and keeps a front door for collections most readers meet one at a time.
+    </p>
+
+    <h2>Collection sizes</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Collection</th><th>Atlas</th>
+          <th class="num group-start">E-Texts</th>
+          <th class="num">MB (IAST)</th>
+          <th class="num">Avg KB</th>
+          <th class="num group-start">PDFs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-slug="sanskrit-wikisource-atlas">
+          <td><a href="https://sa.wikisource.org" target="_blank" rel="noopener">sa.wikisource.org</a></td>
+          <td><a href="https://tylergneill.github.io/sanskrit-wikisource-atlas" target="_blank" rel="noopener">Sanskrit Wikisource</a></td>
+          <td class="num t-texts group-start"></td>
+          <td class="num t-mb"></td>
+          <td class="num t-avg"></td>
+          <td class="num t-pdf group-start"></td>
+        </tr>
+        <tr data-slug="e-bharatisampat-atlas">
+          <td><a href="https://ebharatisampat.in" target="_blank" rel="noopener">ebharatisampat.in</a></td>
+          <td><a href="https://tylergneill.github.io/e-bharatisampat-atlas" target="_blank" rel="noopener">E-bhāratīsampat</a></td>
+          <td class="num t-texts group-start"></td>
+          <td class="num t-mb"></td>
+          <td class="num t-avg"></td>
+          <td class="num t-pdf group-start"></td>
+        </tr>
+        <tr data-slug="sanskrit-documents-atlas">
+          <td><a href="https://sanskritdocuments.org" target="_blank" rel="noopener">sanskritdocuments.org</a></td>
+          <td><a href="https://tylergneill.github.io/sanskrit-documents-atlas" target="_blank" rel="noopener">Sanskrit Documents</a></td>
+          <td class="num t-texts group-start"></td>
+          <td class="num t-mb"></td>
+          <td class="num t-avg"></td>
+          <td class="num t-pdf group-start"></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="muted note-marked">
+      <span class="g-note-mark" aria-hidden="true">*</span>While E-bhāratīsampat and Sanskrit Wikisource PDFs counts
+      represent scans tied to their own texts and hosted on the site,
+      Sanskrit Documents links e-texts to scans of editions only loosely,
+      and the great majority are hosted not on the site itself,
+      but elsewhere (chiefly archive.org).
+      These outbound links are checked for liveness, and dead ones are not counted.
+      Each unique PDF is counted only once (e.g., forty stotra documents may link to a single scan).
+    </p>
+
+    <h2>Growth over time</h2>
+
+    <div id="growthControls" class="g-controls">
+      <span class="g-ctl-group">
+        <span class="g-ctl-label" id="growthMeasureLabel">measure</span>
+        <span class="g-switch" role="group" aria-labelledby="growthMeasureLabel">
+          <button type="button" class="g-switch-btn" data-axis="metric" data-value="texts"
+                  title="Plot the number of texts">texts</button><button
+                  type="button" class="g-switch-btn" data-axis="metric" data-value="bytes"
+                  title="Plot size in megabytes instead of a text count">MB</button>
+        </span>
+      </span>
+      <span class="g-ctl-group">
+        <span class="g-ctl-label" id="growthPeriodLabel">period</span>
+        <span class="g-switch" role="group" aria-labelledby="growthPeriodLabel">
+          <button type="button" class="g-switch-btn" data-axis="granularity" data-value="1"
+                  title="One point per month — the finest grain, and the noisiest">month</button><button
+                  type="button" class="g-switch-btn" data-axis="granularity" data-value="3"
+                  title="One point per quarter">quarter</button><button
+                  type="button" class="g-switch-btn" data-axis="granularity" data-value="12"
+                  title="One point per year — the smoothest reading of the trend">year</button>
+        </span>
+      </span>
+      <span class="g-ctl-group">
+        <span class="g-ctl-label" id="growthTotalsLabel">totals</span>
+        <span class="g-switch" role="group" aria-labelledby="growthTotalsLabel">
+          <button type="button" class="g-switch-btn" data-axis="mode" data-value="cumulative"
+                  title="Running totals — how much each collection holds as of each point">cumulative</button><button
+                  type="button" class="g-switch-btn" data-axis="mode" data-value="added"
+                  title="What arrived in each period on its own, rather than the running total">period</button>
+        </span>
+      </span>
+    </div>
+
+    <div id="growthChart" class="g-chart">Loading…</div>
+
+    <p class="g-note">
+      <span class="g-note-mark" aria-hidden="true">*</span>Sanskrit Wikisource's text count
+      suffers from some insignificant noise for nine months across 2014–2015.
+      Those months are shown here corrected to the level the months on either side agree about; the
+      collection's total today is unaffected.
+    </p>
+
+
+    <h2>Logo</h2>
+    <p>
+      As many drops of water as collections, united and focused by a bindu of
+      purposeful attention.
+    </p>
+
+    <h2>Colophon</h2>
+    <p>
+      Source at <a href="https://github.com/tylergneill/sagara-sangama" target="_blank" rel="noopener">github.com/tylergneill/sagara-sangama</a>,
+      released under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>.
+      Part of <a href="https://kalpataru-grove.info" target="_blank" rel="noopener">kalpataru-grove.info</a>.
+    </p>
+    <p class="muted">
+      <!-- Filled by version.js (code) and counts.js (data date). Both stay
+           empty if their source can't be read, rather than showing a guess. -->
+      code: <span id="appVersion"></span><br />
+      <span id="dataDate"></span>
+    </p>
+  </div>
+
+  <script src="./theme.js"></script>
+  <script src="./version.js"></script>
+  <script src="./counts.js"></script>
+  <script src="./growth.js"></script>
+  <script src="./local-links.js"></script>
+</body>
+</html>

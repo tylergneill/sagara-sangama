@@ -1,0 +1,1405 @@
+/* Sāgarasaṅgama portal.
+
+   Variable names follow the Atlases' styles.css so the family reads as one
+   system, but the default differs: this page opens light, so light is the
+   base :root and dark overrides under [data-theme="dark"]. The toggle in each
+   page's <head> sets that attribute before first paint. A third mode,
+   [data-theme="wave"], sets dark's ink on a cerulean ground under a drifting
+   band of foliate scrollwork -- see the wave-mode section at the foot of
+   this file.
+
+   Putting light in the bare :root means anything that renders before the
+   script runs -- or with JavaScript off entirely -- gets the default face
+   rather than a mode nobody chose.
+
+   Teal and gold are the logo's own colours (see generate_logo.py).  Gold is
+   darkened for light mode -- #C89B3C is tuned against near-black and drops
+   below usable contrast on white. */
+
+/* Tiro Devanagari Sanskrit, self-hosted from assets/fonts/ (OFL, see OFL.txt
+   there). Served from our own origin rather than fonts.googleapis.com so a
+   cold load does not wait on a third-party stylesheet and then a second hop to
+   fonts.gstatic.com before it can paint in the real face -- that gap is what
+   made the wordmark flash Georgia on every hard refresh. Both pages preload
+   the three subsets they actually render.
+
+   Roman only: nothing sets font-style: italic on --serif, so the italics are
+   not downloaded. Subsets are Google's own split -- the browser fetches by
+   unicode-range, so a Latin-only page never pulls the 117K devanagari file.
+   font-display: swap still applies, but with the file same-origin and
+   preloaded it normally arrives before first paint, so nothing swaps. */
+@font-face{
+  font-family: "Tiro Devanagari Sanskrit";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/tiro-devanagari-sanskrit-devanagari.woff2") format("woff2");
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0,
+                 U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+}
+@font-face{
+  font-family: "Tiro Devanagari Sanskrit";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/tiro-devanagari-sanskrit-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+                 U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF,
+                 U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face{
+  font-family: "Tiro Devanagari Sanskrit";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/tiro-devanagari-sanskrit-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+                 U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122,
+                 U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root{
+  /* Display face for the wordmark, the Devanagari, and headings. Covers both
+     scripts; the fallbacks matter for the moment before the webfont resolves
+     and if the files are missing. */
+  --serif: "Tiro Devanagari Sanskrit", Georgia, "Iowan Old Style",
+           "Times New Roman", serif;
+
+  --bg: #ffffff;
+  --panel: #f4f6f8;
+  --panel2: #eef1f4;
+  --text: #16191d;
+  --muted: #55606e;
+  --border: #d7dde3;
+  --accent: #8a6414;          /* gold, darkened for contrast on white */
+  --accent-hover: #6d4e0f;
+  --teal: #0F766E;            /* the logo's teal, which works as-is on white */
+  --rule: #d7dde3;
+}
+
+:root[data-theme="dark"]{
+  --bg: #0b0d10;
+  --panel: #10141a;
+  --panel2: #0f1318;
+  --text: #e6e6e6;
+  --muted: #a8b3c2;
+  --border: #222b36;
+  --accent: #C89B3C;          /* the logo's gold */
+  --accent-hover: #e0b45a;
+  --teal: #14a89c;            /* lifted from the logo's #0F766E, which is too
+                                 dark to read as text on near-black */
+  --rule: #222b36;
+}
+
+/* Wave: a night-sea cerulean, deeper and bluer than dark mode's neutral
+   near-black, so the scrollwork behind the page reads as ornament on water
+   rather than as noise on grey. Gold warms a step to hold its own against the
+   blue surround. Gold and teal are dark mode's, not third values: dark
+   already solved both for a dark ground -- the logo's gold as-is, and its
+   teal lifted for legibility -- and both hold up here (6.89:1 and 5.97:1 on
+   this background). Inventing a warmer gold and a cerulean for wave alone
+   only pulled the Devanagari and the links further from the logo's own two
+   colours than dark already does, for no legibility gain. */
+:root[data-theme="wave"]{
+  --bg: #071a2b;
+  --panel: #0d2842;
+  --panel2: #0a2137;
+  --text: #e8f2fa;
+  --muted: #9dc0d8;
+  --border: #17456b;
+  --accent: #C89B3C;          /* the logo's gold, as in dark -- see above */
+  --accent-hover: #e0b45a;
+  --teal: #14a89c;            /* dark mode's lift, likewise */
+  --rule: #17456b;
+
+  /* The ornament: its ink, how strongly it shows, and the two radii and two
+     periods of the circle it travels. Collected here so the whole effect can
+     be tuned in one place. Sweep is the horizontal radius, rise the vertical;
+     rise is the smaller of the two on both bands, which is what keeps the path
+     a flattened ellipse rather than a round orbit. */
+  --scroll-ink: #2f7fb8;
+  --scroll-opacity: 0.30;
+  --scroll-opacity-far: 0.17;
+  --scroll-sweep: 26px;
+  --scroll-rise: 2.25px;
+  --scroll-rise-far: 1.5px;
+  --scroll-period: 19s;
+  --scroll-period-far: 31s;
+}
+
+* { box-sizing: border-box; }
+
+/* No rubber-band past the content on touch devices. */
+html{ overscroll-behavior-y: none; }
+
+body{
+  margin: 0;
+  /* 100vh on iOS means the viewport with the URL bar RETRACTED, which is
+     taller than what is actually visible -- so a page that exactly fits still
+     scrolls into dead space. dvh tracks the visible area instead; vh stays as
+     the fallback for browsers without it. */
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial,
+               "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); text-decoration: underline; }
+
+/* === External link icon ===
+   Copied from the Atlases' styles.css so the family marks outbound links the
+   same way. A mask rather than an <img>, so it inherits the link's colour. */
+a[target="_blank"]::after{
+  content: "";
+  display: inline-block;
+  width: 0.65em;
+  height: 0.65em;
+  margin-left: 0.15em;
+  vertical-align: middle;
+  position: relative;
+  top: -0.05em;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 9 L9 1 M5 1 L9 1 L9 5' stroke='black' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 9 L9 1 M5 1 L9 1 L9 5' stroke='black' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+/* ---------------------------------------------------------------- toggle */
+/* The two corner chips: About at top-left, the theme toggle at top-right.
+   One rule so they stay the same box -- same padding, radius and border --
+   and the top edge reads as a matched pair rather than two stray controls. */
+.corner-link,
+.theme-toggle{
+  position: absolute;
+  top: 16px;
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1.3;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.theme-toggle{ right: 16px; }
+.corner-link{
+  left: 16px;
+  text-decoration: none;
+}
+.corner-link:hover,
+.theme-toggle:hover{ border-color: var(--accent); }
+
+/* ------------------------------------------------------------------ page */
+.portal{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px 32px;
+  text-align: center;
+}
+
+/* Tiro Devanagari Sanskrit carries Latin as well as Devanagari, so the
+   wordmark's IAST diacritics and the Devanagari line share one voice rather
+   than pairing a Latin serif against a separate Indic face. */
+.wordmark{
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 5.6vw, 3.2rem);
+  margin: 0;
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+}
+
+.devanagari{
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 4.2vw, 2.3rem);
+  margin: 10px 0 0;
+  font-weight: 400;
+  line-height: 1.5;    /* Devanagari needs headroom for its matras */
+}
+
+/* The two members of the compound, split at the sandhi boundary -- the logo's
+   own two colours, teal for the ocean half and gold for the meeting half. */
+.dev-a{ color: var(--teal); }
+.dev-b{ color: var(--accent); }
+
+.tagline{
+  color: var(--muted);
+  margin: 10px 0 0;
+  font-size: 1.05rem;
+  text-wrap: balance;   /* if it wraps anyway, keep the lines even */
+}
+
+/* One line on desktop; the newline either side of the <br> collapses to a
+   space when it is hidden. Shown again at the mobile breakpoint below. */
+.tagline-break{ display: none; }
+
+/* ----------------------------------------------------- portal search bar */
+/* The way in to search.html, below the constellation and the total count --
+   Wikipedia's own order, where the mark and the per-language counts come
+   first and the box sits under them. Understated: muted border, no fill, and
+   it takes the accent only when focused. Narrower than the constellation on
+   purpose, so it reads as one control rather than a third band of content. */
+.portal-search{
+  /* Sits below the constellation and the total, so the page reads
+     logo -> what is here -> how to look through it. The gap is larger than
+     the one above the total because this opens a new band rather than
+     continuing that one. */
+  margin: 30px auto 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(100%, 460px);
+  position: relative;
+}
+
+.portal-search-icon{
+  position: absolute;
+  left: 12px;
+  width: 15px;
+  height: 15px;
+  pointer-events: none;
+  opacity: 0.5;
+  background: currentColor;
+  color: var(--muted);
+  -webkit-mask: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.6-3.6'/%3E%3C/svg%3E");
+  mask: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.6-3.6'/%3E%3C/svg%3E");
+}
+
+.portal-search-input{
+  flex: 1;
+  min-width: 0;
+  font-family: inherit;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 9px 14px 9px 34px;
+}
+.portal-search-input:focus{
+  outline: none;
+  border-color: var(--accent);
+}
+.portal-search-input::-webkit-search-decoration,
+.portal-search-input::-webkit-search-cancel-button{ -webkit-appearance: none; }
+
+.portal-search-go{
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--muted);
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.portal-search-go:hover{
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ------------------------------------------------- logo + fanned atlases */
+/* Desktop: a 3-column grid. The logo sits in the centre cell spanning all
+   three rows; the Atlas links take the cells at 12, 4 and 8 o'clock, matching
+   where the three petals actually point (rotations of 180/300/420 degrees in
+   the SVG's y-down frame). */
+.constellation{
+  margin: 32px 0 8px;
+  display: grid;
+  /* Side columns get equal fixed-ish share so the two flanking Atlases wrap
+     the same way as each other; the centre column takes only what the logo
+     needs. */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  align-items: center;
+  gap: 4px 28px;
+  max-width: 1080px;   /* the link+source pairs are wide; keep them off the logo */
+  width: 100%;
+}
+
+/* The logo takes the middle row of the centre column only. Row 1 above it
+   belongs to the 12 o'clock Atlas, row 3 below stays empty so the left/right
+   links centre on the logo rather than on the whole block. */
+.logo{
+  grid-column: 2;
+  grid-row: 2;
+  display: block;         /* an <img> is inline by default; block kills the
+                             baseline gap under it */
+  width: clamp(150px, 26vw, 230px);
+  height: auto;
+  justify-self: center;   /* the centre cell is wider than the logo */
+}
+
+.atlas--top   { grid-column: 2; grid-row: 1; }
+.atlas--right { grid-column: 3; grid-row: 2; text-align: left; }
+.atlas--left  { grid-column: 1; grid-row: 2; text-align: right; }
+
+.atlas{ padding: 8px 0; }
+
+/* Two rows: the two links, then the two facts. Each row wraps rather than
+   overflowing, and inherits its column's alignment (right / centre / left)
+   from .atlas, so the rows stay flush with the edge facing the logo. */
+.atlas-links,
+.atlas-meta{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+.atlas--top   .atlas-links, .atlas--top   .atlas-meta{ justify-content: center; }
+.atlas--right .atlas-links, .atlas--right .atlas-meta{ justify-content: flex-start; }
+.atlas--left  .atlas-links, .atlas--left  .atlas-meta{ justify-content: flex-end; }
+
+/* Both children ship empty and are filled by counts.js after first paint, so
+   without a reserved height this row collapses and everything below it jumps
+   down when the JSON lands. One count line plus the smaller date line. */
+.atlas-meta{ margin-top: 3px; min-height: 2.05em; }
+
+.atlas-name{
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  font-weight: 600;
+  color: var(--accent);
+}
+.atlas-name:hover{ color: var(--accent-hover); }
+
+/* The external collection, distinguished from the Atlas by both colour and
+   size -- it is where the text lives, not the interface over it. */
+.atlas-source{
+  font-size: 0.95rem;   /* ".org" is a small target; don't shrink it further */
+  color: var(--teal);
+}
+.atlas-source:hover{ color: var(--teal); text-decoration: underline; }
+
+.atlas-count{
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+/* Figures lifted out of the muted units around them, same as the total. */
+.atlas-count strong{ color: var(--text); font-weight: 600; }
+
+/* Quieter than the count: currency is context, not the headline figure. */
+.atlas-date{
+  color: var(--muted);
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+/* ------------------------------------------------------------- the total */
+/* The corpus total, folded into the tagline as a parenthetical rather than
+   standing as its own line under the constellation. It is a fact about the
+   collections the tagline just named, so it reads as an aside there, and the
+   page saves a whole band of vertical space. Slightly dimmer than the tagline
+   around it so it stays subordinate to the sentence it sits inside; the
+   number itself takes the body colour, as it did on its own line. */
+.tagline-total{ opacity: 0.8; white-space: nowrap; }
+.tagline-total strong{ color: var(--text); font-weight: 600; }
+
+/* ---------------------------------------------------------- bottom links */
+.bottom-links{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+.bottom-links .sep{ color: var(--muted); opacity: 0.6; }
+
+/* ------------------------------------------------------------- about page */
+.about-wrap{
+  flex: 1;
+  width: 100%;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 56px 24px 48px;
+  line-height: 1.65;
+}
+.about-wrap h1{
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 2rem;
+  margin: 0 0 8px;
+}
+.about-wrap h2{
+  font-size: 1.15rem;
+  margin: 32px 0 8px;
+  color: var(--accent);
+}
+.about-wrap p{ margin: 12px 0; }
+.about-wrap table{
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.95rem;
+}
+.about-wrap th, .about-wrap td{
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.about-wrap th{ color: var(--muted); font-weight: 600; }
+.about-wrap td.num{ text-align: right; font-variant-numeric: tabular-nums; }
+/* Headers right-align with their figures -- the decimal points line up down
+   the column, and a centred header over them only reads as misaligned. */
+.about-wrap th.num{ text-align: right; }
+
+/* Rules before Texts and before PDFs, separating the identity columns, the
+   figures, and the scan count -- so it is clear which numbers the sizes
+   describe. */
+.about-wrap th.group-start,
+.about-wrap td.group-start{
+  border-left: 1px solid var(--border);
+  padding-left: 14px;
+}
+/* Not-yet-published figures, dimmed so they read as absent rather than as a
+   value competing with the real numbers. */
+.about-wrap td.none{ color: var(--muted); opacity: 0.55; }
+.about-wrap .back{ display: inline-block; margin-bottom: 24px; }
+.about-wrap .muted{ color: var(--muted); font-size: 0.9rem; }
+/* The name and its gloss, which is the page's heading now that "About" is
+   gone. Sized here rather than inheriting .about-wrap h1, since this rule
+   comes later and would otherwise only override the colour. Devanagari needs
+   more line headroom than the Latin h1 allowed. */
+.about-wrap .gloss{
+  color: var(--accent);
+  font-size: 2rem;
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------------------------ small */
+/* Below 720px the fan collapses to a single column: the logo first, then the
+   three Atlases stacked. Absolute bearings stop meaning anything on a phone. */
+@media (max-width: 720px){
+  .constellation{
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    gap: 4px;
+  }
+  /* Tight junction between the logo and the first Atlas: this is the gap that
+     decides whether the whole page clears an iPhone viewport without scroll. */
+  .logo{
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0 auto;
+    width: clamp(120px, 34vw, 150px);
+  }
+  .atlas{ padding: 4px 0; }
+  .atlas--top, .atlas--right, .atlas--left{
+    grid-column: 1;
+    grid-row: auto;
+    text-align: center;
+  }
+  /* The rows are flex containers, so their justify-content beats text-align --
+     centre them explicitly or each Atlas keeps its desktop edge alignment. */
+  .atlas--top .atlas-links,   .atlas--top .atlas-meta,
+  .atlas--right .atlas-links, .atlas--right .atlas-meta,
+  .atlas--left .atlas-links,  .atlas--left .atlas-meta{
+    justify-content: center;
+  }
+
+  .portal{ padding: 48px 20px 24px; }
+  .constellation{ margin-top: 12px; margin-bottom: 0; }
+  /* The tagline's parenthetical total is the one part that may not fit beside
+     its sentence on a narrow screen; nowrap keeps "(19,052 texts)" whole and
+     lets it wrap as a unit to the next line. */
+  .portal-search{ margin-top: 18px; }
+}
+
+/* Top-align only when the stacked column is actually taller than the viewport.
+   Keying this to width alone punished a narrow-but-tall window: it got the
+   phone's tight top margin while still having room to centre comfortably.
+   The padding has to clear the absolutely-positioned toggle either way. */
+@media (max-width: 720px) and (max-height: 780px){
+  .portal{
+    justify-content: flex-start;
+    padding: 52px 20px 28px;
+  }
+}
+
+/* The tagline breaks at its phrase boundary as soon as it stops fitting on
+   one comfortable line -- a wider bound than the layout breakpoint, since the
+   sentence runs out of room before the fan does. */
+@media (max-width: 860px){
+  .tagline-break{ display: inline; }
+}
+
+/* ------------------------------------------------------- growth chart */
+/* The About page's three-series line chart (docs/growth.js). Controls, chart,
+   legend and note; the series colours live in the JS, since they are chosen
+   per theme and applied to SVG attributes. */
+
+/* The growth toolbar, matching EBS Atlas's .gb-controls. The row gap has to
+   clear the 22px between groups: a legend sitting closer to the controls than
+   the controls sit to each other reads as part of the same row. */
+.g-controls{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 22px;
+  margin: 16px 0 14px;
+}
+.g-ctl-group{ display: inline-flex; align-items: center; gap: 7px; }
+/* Small caps set well off the surface, so the label names its switch without
+   competing with it. A two-word label breaking mid-group would make that group
+   taller than its neighbours and push the row out of alignment; the row wraps
+   between groups instead. */
+.g-ctl-label{
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+/* A joined segment: each button carries its own border, the shared edges
+   collapse, and only the two ends are rounded. Against wave mode's scrollwork
+   the segment needs a ground of its own, so it takes the panel fill rather
+   than EBS's transparent one. */
+.g-switch{ display: inline-flex; background: var(--panel); border-radius: 4px; }
+.g-switch-btn{
+  font: inherit;
+  font-size: 12px;
+  padding: 3px 10px;
+  cursor: pointer;
+  background: transparent;
+  color: inherit;
+  border: 1px solid var(--border);
+}
+.g-switch-btn:first-child{ border-radius: 4px 0 0 4px; }
+.g-switch-btn:last-child{ border-radius: 0 4px 4px 0; }
+.g-switch-btn + .g-switch-btn{ border-left: none; }
+.g-switch-btn:hover{ background: color-mix(in srgb, currentColor 8%, transparent); }
+/* EBS hardcodes #fff on the active segment; here the accent is a light gold in
+   the dark and wave themes, so the label takes the page ground instead -- dark
+   on gold there, white-on-gold in light. */
+.g-switch-btn.g-on{
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.g-chart{ position: relative; margin: 4px 0 10px; }
+.g-svg{ width: 100%; height: auto; display: block; overflow: visible; }
+
+/* Recessive, one step off the surface -- the data is the ink here. */
+.g-grid{ stroke: var(--rule); stroke-width: 1; opacity: 0.55; }
+.g-axis-label{ fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+/* The direct labels carry identity in the crowded period view, where three
+   lines converge and the stack is tight, so they are sized to be read rather
+   than to be small -- 11px lost against wave mode's scrollwork. The paint
+   order stroke lays a ground the width of the glyphs themselves, which keeps
+   them legible over the ornament without a box to align. */
+.g-end-label{
+  font-size: 12.5px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+.g-end-label:hover{ text-decoration: underline; }
+/* A switched-off series has no line to sit on, so its label parks below the
+   others, dimmed -- the one thing left to click to bring it back. */
+.g-end-off{ opacity: 0.45; font-weight: 600; }
+/* The crosshair and its dots are drawn after the start handles and so sit on
+   top of them; they take no pointer events, or a dot parked over a handle
+   would swallow the click that anchors the axis. */
+.g-crosshair{ stroke: var(--muted); stroke-width: 1; opacity: 0.5; pointer-events: none; }
+/* A surface-coloured ring keeps a marker legible where two lines overlap. */
+.g-dot{ stroke: var(--bg); stroke-width: 2; pointer-events: none; }
+
+/* The start-of-series handle. Hollow at rest so it reads as a mark on the
+   line rather than a data point, and filled once the axis is anchored to it. */
+.g-start{
+  fill: var(--bg);
+  stroke-width: 2;
+  pointer-events: none;
+  transition: r 90ms ease-out;
+}
+/* Armed by proximity, not by hover: growth.js adds these to whichever handle
+   is nearest the pointer within its grab radius. Neither shape takes pointer
+   events, so nothing here depends on the cursor being over them.
+
+   The halo is the signal that the snap has happened -- it blooms from nothing
+   to a wide soft disc in the series colour, which reads at the edge of vision
+   while the pointer is still travelling. The ring's own growth is the
+   confirmation once the eye arrives. */
+.g-start-halo{
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 110ms ease-out, r 110ms ease-out;
+}
+.g-start-halo-on{ opacity: 0.28; r: 20; }
+.g-start-near{ r: 7; stroke-width: 3; }
+
+.g-tip{
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+.g-tip-when{ color: var(--muted); margin-bottom: 3px; }
+.g-tip-key{
+  display: inline-block;
+  width: 9px; height: 9px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+
+/* The caveat under the chart. Set smaller and muted: it qualifies the plot
+   for a reader who looks closely, and should not compete with it. */
+/* The mark hangs in the margin so the note's first line still starts on the
+   text edge, with a space of its own after it -- an asterisk set tight against
+   the first word reads as part of it. aria-hidden because it is a visual
+   pointer back to the figure it marks, and read aloud it would only be a
+   stray asterisk. */
+.g-note-mark{
+  display: inline-block;
+  width: 1.1em;
+  margin-left: -1.1em;
+}
+/* Both footnoted paragraphs hang their mark, so the indent has to come back
+   as padding or the first line starts left of the paragraphs above it. */
+.note-marked, .g-note{ padding-left: 1.1em; }
+
+/* The asterisk on a marked figure sits off the digits and does not disturb the
+   column's alignment -- the number stays where the tabular figures put it. */
+.t-mark{
+  display: inline-block;
+  width: 0;
+  padding-left: 0.15em;
+  opacity: 0.75;
+}
+/* No measure cap: the note is a caption to the chart and runs to the same
+   width, so its right edge lines up with the plot rather than breaking short
+   of it. It is one short paragraph, not body copy that needs a reading
+   measure. */
+.g-note{
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 10px 0 0;
+}
+
+/* The end labels used to come off below the layout breakpoint, when a legend
+   underneath still carried identity. They are now the only naming of the
+   series -- and the only way to switch one back on -- so they stay, set down a
+   step to keep their gutter from eating the plot on a narrow screen. */
+@media (max-width: 620px){
+  .g-end-label{ font-size: 11px; stroke-width: 2.5px; }
+}
+
+/* ----------------------------------------------------------- wave mode */
+/* The drifting scrollwork behind the page in [data-theme="wave"].
+
+   Two bands of the same tile (assets/scroll.svg, written by
+   generate_scroll.py) at different sizes, opacities and speeds: a near band
+   and a slower, fainter far one. Each travels a slow flattened circle rather
+   than sliding side to side, and they circle in opposite directions on offset
+   periods, so the two never line up the same way twice and the field reads as
+   moving water rather than as a single sheet sliding back and forth.
+
+   Mechanics worth knowing:
+
+   - Fixed, not scrolled. `position: fixed` keeps the ornament still under a
+     scrolling About page; a background on <body> would drag with the text and
+     turn a gentle sweep into motion sickness.
+
+   - The tile is masked, not drawn. The SVG's own stroke is currentColor,
+     which a background-image cannot inherit, so the layers are painted as
+     --scroll-ink and the tile is used as a mask. One asset, themeable ink,
+     and no second copy of the file with a colour baked in.
+
+   - Wider and taller than the viewport. Each layer is inset by -1.5x the
+     horizontal sweep on both sides and 60px top and bottom -- comfortably more
+     than the vertical rise -- so travelling the circle never exposes an edge.
+
+   - Composited. Only transform and opacity animate, both off the main thread;
+     nothing here triggers layout or paint per frame.
+
+   - Behind everything. z-index -1 with .portal and .about-wrap given a stacking
+     position, so content sits over the ornament and stays clickable. */
+
+.wave-field{ display: none; }
+
+:root[data-theme="wave"] .wave-field{
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.wave-band{
+  position: absolute;
+  /* Room to slide without ever showing an end. */
+  left: calc(-1.5 * var(--scroll-sweep));
+  right: calc(-1.5 * var(--scroll-sweep));
+  top: -60px;
+  bottom: -60px;
+  background-color: var(--scroll-ink);
+  -webkit-mask-image: url("./assets/scroll.svg");
+  mask-image: url("./assets/scroll.svg");
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  will-change: transform;
+}
+
+/* The near band: larger tile, stronger ink, shorter period. */
+.wave-band--near{
+  opacity: var(--scroll-opacity);
+  -webkit-mask-size: 260px 130px;
+  mask-size: 260px 130px;
+  animation: wave-sweep var(--scroll-period) linear infinite;
+}
+
+/* The far band: smaller and fainter, entering its circle at the opposite
+   phase, so the two are never together. Offset half a tile vertically as well,
+   so the rows of coils interleave instead of stacking. */
+.wave-band--far{
+  opacity: var(--scroll-opacity-far);
+  -webkit-mask-size: 170px 85px;
+  mask-size: 170px 85px;
+  -webkit-mask-position: 40px 42px;
+  mask-position: 40px 42px;
+  animation: wave-sweep-far var(--scroll-period-far) linear infinite;
+}
+
+/* A circle, not a sweep. Each band travels x = sweep*sin(t), y = rise*cos(t):
+   the same out-and-back left to right as before, with the vertical running a
+   quarter period ahead of it. Because the two axes peak at different moments
+   the path closes into an ellipse, and the tile turns through it the way a
+   float rides a swell -- forward and up, forward and down -- rather than
+   sliding flat with a lift at the turn.
+
+   Sampled at sixteen stops. CSS interpolates straight lines between keyframes,
+   so the path is really a polygon inscribed in the ellipse; sixteen sides pull
+   it within 1.9% of the radius, half a pixel at the horizontal extremes, which
+   is under what a 30%-opacity ornament can show. Eight stops leaves 7.6%, and
+   the stop count costs nothing per frame -- the browser interpolates one
+   transform either way -- so there is no reason to be stingy with it.
+
+   Timing is linear, deliberately. ease-in-out is right for a sweep, where the
+   ends are turning points and should slow; on a circle there are no ends, and
+   easing would stall the band at the horizontal extremes and rush it through
+   the vertical ones -- a wobble rather than a rotation. The circle carries its
+   own easing: each axis on its own is already sinusoidal, slowest where it
+   turns.
+
+   The vertical radius is a small fraction of the horizontal -- 2.25px against
+   26px, under a tenth -- so the path is a very flat ellipse. This is tuned by
+   eye rather than derived: a true circle at this sweep pushes the rows of
+   coils far enough up and down to read as drift, and even a tenth of the sweep
+   was more roll than the ornament wanted. What survives at this amplitude is
+   not a visible rise and fall but a slight wander off the horizontal, enough
+   that the band never retraces the same line twice. Raise --scroll-rise to
+   bring the circle back; the geometry holds at any ratio. */
+@keyframes wave-sweep{
+  0%, 100% { transform: translate3d(0, calc(-1 * var(--scroll-rise)), 0); }
+  6.25%    { transform: translate3d(calc(0.383 * var(--scroll-sweep)), calc(-0.924 * var(--scroll-rise)), 0); }
+  12.5%    { transform: translate3d(calc(0.707 * var(--scroll-sweep)), calc(-0.707 * var(--scroll-rise)), 0); }
+  18.75%   { transform: translate3d(calc(0.924 * var(--scroll-sweep)), calc(-0.383 * var(--scroll-rise)), 0); }
+  25%      { transform: translate3d(var(--scroll-sweep), 0, 0); }
+  31.25%   { transform: translate3d(calc(0.924 * var(--scroll-sweep)), calc(0.383 * var(--scroll-rise)), 0); }
+  37.5%    { transform: translate3d(calc(0.707 * var(--scroll-sweep)), calc(0.707 * var(--scroll-rise)), 0); }
+  43.75%   { transform: translate3d(calc(0.383 * var(--scroll-sweep)), calc(0.924 * var(--scroll-rise)), 0); }
+  50%      { transform: translate3d(0, var(--scroll-rise), 0); }
+  56.25%   { transform: translate3d(calc(-0.383 * var(--scroll-sweep)), calc(0.924 * var(--scroll-rise)), 0); }
+  62.5%    { transform: translate3d(calc(-0.707 * var(--scroll-sweep)), calc(0.707 * var(--scroll-rise)), 0); }
+  68.75%   { transform: translate3d(calc(-0.924 * var(--scroll-sweep)), calc(0.383 * var(--scroll-rise)), 0); }
+  75%      { transform: translate3d(calc(-1 * var(--scroll-sweep)), 0, 0); }
+  81.25%   { transform: translate3d(calc(-0.924 * var(--scroll-sweep)), calc(-0.383 * var(--scroll-rise)), 0); }
+  87.5%    { transform: translate3d(calc(-0.707 * var(--scroll-sweep)), calc(-0.707 * var(--scroll-rise)), 0); }
+  93.75%   { transform: translate3d(calc(-0.383 * var(--scroll-sweep)), calc(-0.924 * var(--scroll-rise)), 0); }
+}
+
+/* The far band runs the same ellipse the other way round -- starting at the
+   opposite phase and turning counter to the near one. Two layers circling in
+   opposite directions on offset periods never repeat a relative position, and
+   the counter-rotation reads as depth: the far water working against the near
+   rather than with it. */
+@keyframes wave-sweep-far{
+  0%, 100% { transform: translate3d(0, var(--scroll-rise-far), 0); }
+  6.25%    { transform: translate3d(calc(0.383 * var(--scroll-sweep)), calc(0.924 * var(--scroll-rise-far)), 0); }
+  12.5%    { transform: translate3d(calc(0.707 * var(--scroll-sweep)), calc(0.707 * var(--scroll-rise-far)), 0); }
+  18.75%   { transform: translate3d(calc(0.924 * var(--scroll-sweep)), calc(0.383 * var(--scroll-rise-far)), 0); }
+  25%      { transform: translate3d(var(--scroll-sweep), 0, 0); }
+  31.25%   { transform: translate3d(calc(0.924 * var(--scroll-sweep)), calc(-0.383 * var(--scroll-rise-far)), 0); }
+  37.5%    { transform: translate3d(calc(0.707 * var(--scroll-sweep)), calc(-0.707 * var(--scroll-rise-far)), 0); }
+  43.75%   { transform: translate3d(calc(0.383 * var(--scroll-sweep)), calc(-0.924 * var(--scroll-rise-far)), 0); }
+  50%      { transform: translate3d(0, calc(-1 * var(--scroll-rise-far)), 0); }
+  56.25%   { transform: translate3d(calc(-0.383 * var(--scroll-sweep)), calc(-0.924 * var(--scroll-rise-far)), 0); }
+  62.5%    { transform: translate3d(calc(-0.707 * var(--scroll-sweep)), calc(-0.707 * var(--scroll-rise-far)), 0); }
+  68.75%   { transform: translate3d(calc(-0.924 * var(--scroll-sweep)), calc(-0.383 * var(--scroll-rise-far)), 0); }
+  75%      { transform: translate3d(calc(-1 * var(--scroll-sweep)), 0, 0); }
+  81.25%   { transform: translate3d(calc(-0.924 * var(--scroll-sweep)), calc(0.383 * var(--scroll-rise-far)), 0); }
+  87.5%    { transform: translate3d(calc(-0.707 * var(--scroll-sweep)), calc(0.707 * var(--scroll-rise-far)), 0); }
+  93.75%   { transform: translate3d(calc(-0.383 * var(--scroll-sweep)), calc(0.924 * var(--scroll-rise-far)), 0); }
+}
+
+/* Content sits above the fixed ornament. Both pages' top-level wrapper needs a
+   stacking position for this, since the field is at z-index -1. */
+:root[data-theme="wave"] .portal,
+:root[data-theme="wave"] .about-wrap{
+  position: relative;
+  z-index: 0;
+}
+
+/* The corner chips are absolutely positioned and would otherwise share the
+   field's plane -- and the About link would sit under it, unclickable. */
+:root[data-theme="wave"] .corner-link,
+:root[data-theme="wave"] .theme-toggle{ z-index: 1; }
+
+/* Motion is the whole point of this mode, so the ornament stays -- but it
+   holds still for anyone who has asked the system for less of it. Circular
+   motion is the more provoking kind for anyone susceptible to it, which makes
+   this the more important to honour. The scrollwork is then simply a static
+   border, which is what it is anyway. */
+@media (prefers-reduced-motion: reduce){
+  .wave-band--near,
+  .wave-band--far{ animation: none; }
+}
+
+/* On a phone the desktop tile is too large a motif for the width: at 390px
+   only about one and a half coils span the screen, which reads as a few big
+   shapes behind the text rather than as a border. Both bands scale down, and
+   both radii shorten with them so the circle stays proportionate to the tile
+   rather than throwing it a third of a tile sideways. */
+@media (max-width: 720px){
+  :root[data-theme="wave"]{
+    --scroll-sweep: 16px;
+    --scroll-rise: 1.5px;
+    --scroll-rise-far: 1px;
+    --scroll-opacity: 0.26;
+    --scroll-opacity-far: 0.14;
+  }
+  .wave-band--near{ -webkit-mask-size: 170px 85px; mask-size: 170px 85px; }
+  .wave-band--far{ -webkit-mask-size: 115px 58px; mask-size: 115px 58px; }
+}
+
+/* ==================================================================== *
+ * SEARCH PAGE (search.html)
+ *
+ * An Atlas-shaped page with no sidebar: a fixed topbar carrying the query,
+ * a controls strip, and one column of results. The Atlases put the browse
+ * tree on the left because they browse a hierarchy; this page has three
+ * collections organised three incompatible ways, so there is no shared tree
+ * to put there and the column runs full width instead.
+ *
+ * Result identity is carried by colour: each row wears its collection's
+ * series colour from the About page's growth chart, as a left edge and a
+ * very light background wash. The wash is deliberately near-threshold --
+ * enough to group a run of rows from one collection at a glance, not enough
+ * to compete with the titles sitting on it. Colour is never the only signal:
+ * every row also names its collection (or sits under a heading that does).
+ * ==================================================================== */
+
+.searchPage{
+  display: flex;
+  flex-direction: column;
+}
+
+/* Per-atlas identity. One custom property set per collection, so a rule can
+   say var(--atlas) and every themed variant follows. The strokes are
+   growth.js's SERIES values; the washes are those hues at low alpha, which
+   is why they are written as colour-mix rather than as a fourth hardcoded
+   set -- a tint that drifts from its stroke is the bug this avoids. */
+.s-row--w{ --atlas: #2a78d6; }
+.s-row--e{ --atlas: #eb6834; }
+.s-row--d{ --atlas: #1baf7a; }
+
+:root[data-theme="dark"] .s-row--w{ --atlas: #3987e5; }
+:root[data-theme="dark"] .s-row--e{ --atlas: #d95926; }
+:root[data-theme="dark"] .s-row--d{ --atlas: #199e70; }
+
+:root[data-theme="wave"] .s-row--w{ --atlas: #5aa9f0; }
+:root[data-theme="wave"] .s-row--e{ --atlas: #f08a4b; }
+:root[data-theme="wave"] .s-row--d{ --atlas: #38c793; }
+
+/* How much of the hue reaches the background. Light mode can take less than
+   the dark modes: a pale wash on white shows at a lower percentage than the
+   same wash has to reach to register against a near-black or a deep blue. */
+:root{ --wash: 7%; --wash-hover: 12%; }
+:root[data-theme="dark"]{ --wash: 13%; --wash-hover: 20%; }
+:root[data-theme="wave"]{ --wash: 15%; --wash-hover: 23%; }
+
+/* ------------------------------------------------------------- topbar */
+.s-topbar{
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 18px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  /* The wave ornament drifts behind the whole page; the bar needs its own
+     ground or the scrollwork shows through the controls. */
+  backdrop-filter: saturate(1.2);
+}
+
+.s-brand{
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.s-home{
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.s-home:hover{ color: var(--accent); }
+
+.s-crumb{
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.s-crumb::before{ content: "/ "; opacity: 0.6; }
+
+.s-searchWrap{
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.s-searchIcon{
+  position: absolute;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  opacity: 0.55;
+  background: currentColor;
+  color: var(--muted);
+  -webkit-mask: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.6-3.6'/%3E%3C/svg%3E");
+  mask: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.6-3.6'/%3E%3C/svg%3E");
+}
+
+.s-search{
+  width: 100%;
+  padding: 8px 32px 8px 32px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+}
+.s-search:focus{
+  outline: none;
+  border-color: var(--accent);
+}
+/* The type=search widget's own clear button, suppressed: the page ships its
+   own so the control looks the same in every browser. */
+.s-search::-webkit-search-decoration,
+.s-search::-webkit-search-cancel-button{ -webkit-appearance: none; }
+
+.s-clear{
+  position: absolute;
+  right: 8px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.s-clear:hover{ color: var(--accent); }
+
+.s-nav{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.s-navlabel{ color: var(--muted); font-size: 0.85rem; }
+
+.s-select{
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+.s-sep{ color: var(--muted); opacity: 0.45; }
+
+/* The portal positions the toggle against the page; here it is one control
+   in a row and must sit in normal flow. */
+.searchPage .theme-toggle{
+  position: static;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+}
+.searchPage .theme-toggle .toggle-label{ display: none; }
+
+/* ------------------------------------------------------------ controls */
+.s-main{
+  flex: 1;
+  width: 100%;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 18px 18px 40px;
+}
+
+.s-controls{ margin-bottom: 14px; }
+
+.s-controlRow{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* On-off toggles are pills, the same control the Atlases use for their
+   "exact" switch: a rounded label carrying the whole visible state, with a
+   visually-hidden checkbox behind it so it stays focusable and keyboard-
+   toggleable. Off is an outline, on is filled with the accent -- no tick box,
+   which at this size reads as clutter beside the collection chips. */
+.s-toggle{
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  font-size: 0.8rem;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.s-toggle:hover{ border-color: var(--accent); color: var(--text); }
+.s-toggle:has(input:checked){
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+/* Keep the keyboard focus ring on the pill, since the input itself is hidden. */
+.s-toggle:focus-within{ outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.s-toggle input{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.s-chips{ display: inline-flex; gap: 6px; flex-wrap: wrap; }
+
+/* A chip is both the colour legend and the per-collection filter. Switched
+   off it keeps its dot but loses its wash, so the reader can still see which
+   colour it stands for while it is excluded. */
+.s-chip{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.s-chip.is-on{
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--atlas) 45%, var(--border));
+  background: color-mix(in srgb, var(--atlas) var(--wash), var(--bg));
+}
+.s-chip:hover{ border-color: var(--atlas); }
+.s-chip:not(.is-on) .s-chipDot{ opacity: 0.35; }
+
+.s-chipDot{
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--atlas);
+  flex: 0 0 auto;
+}
+
+.s-status{
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* ------------------------------------------------------------- results */
+.s-list{ display: flex; flex-direction: column; gap: 6px; }
+
+.s-row{
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--atlas);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--atlas) var(--wash), var(--bg));
+}
+.s-row:hover{
+  background: color-mix(in srgb, var(--atlas) var(--wash-hover), var(--bg));
+  border-color: color-mix(in srgb, var(--atlas) 40%, var(--border));
+  border-left-color: var(--atlas);
+}
+
+.s-rowHead{
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.s-title{
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  color: var(--text);
+  text-decoration: none;
+}
+.s-title:hover{ color: var(--accent); text-decoration: underline; }
+
+.s-meta{
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.s-rowFoot{
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 5px;
+  font-size: 0.78rem;
+}
+
+.s-atlasTag{
+  color: var(--atlas);
+  text-decoration: none;
+  font-weight: 600;
+  /* Colour alone never carries the collection: this is its name in words. */
+  white-space: nowrap;
+}
+.s-atlasTag:hover{ text-decoration: underline; }
+
+.s-group{
+  color: var(--muted);
+  text-decoration: none;
+}
+a.s-group:hover{ color: var(--accent); text-decoration: underline; }
+.s-group::before{ content: "· "; opacity: 0.5; }
+
+/* A category path reads leaf-first in importance, not left-to-right: the last
+   name is the category, the ones before it are the context that disambiguates
+   it. Dimming the ancestors says that without reordering them. */
+.s-groupAnc{ opacity: 0.6; }
+.s-groupLeaf{ color: var(--muted); text-decoration: none; }
+a.s-groupLeaf:hover, a.s-groupAnc:hover{
+  color: var(--accent);
+  text-decoration: underline;
+}
+.s-groupSep{ opacity: 0.4; margin: 0 3px; }
+
+/* Depth control. Hidden unless category grouping is on -- it has nothing to
+   act on otherwise -- so it needs the display rule to win over `hidden`. */
+.s-depth{ display: inline-flex; align-items: center; gap: 4px; }
+.s-depth[hidden]{ display: none; }
+.s-depthLabel{ color: var(--muted); font-size: 0.82rem; margin-right: 1px; }
+
+.s-depthBtn{
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.s-depthBtn:hover{ color: var(--text); border-color: var(--muted); }
+.s-depthBtn.is-on{
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+.s-badges{ display: inline-flex; gap: 5px; flex-wrap: wrap; margin-left: auto; }
+
+.s-badge{
+  display: inline-block;
+  padding: 1px 7px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+  background: var(--bg);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.s-badgeLink:hover{
+  color: var(--accent);
+  border-color: var(--accent);
+}
+/* Says "this is not a finished reading text": Wikisource's Proofing rows and
+   e-bhāratīsampat's PDF-only scans. A warning in the row, not a colour code. */
+.s-badgeWarn{
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+.s-badgeScan{ font-style: italic; }
+
+/* --------------------------------------------------------- grouped view */
+.s-group-section{ margin-bottom: 22px; }
+
+/* A category block sits INSIDE a collection block, so it is indented and its
+   heading is quieter than the collection's -- the collection is the primary
+   division, the category the subdivision within it. */
+.s-catSection{ margin: 0 0 14px 14px; }
+
+.s-catHead{
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding-bottom: 3px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-bottom: 1px solid var(--line);
+}
+
+.s-catName{
+  font-family: var(--serif);
+  font-size: 0.98rem;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.s-groupHead{
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 8px;
+  padding-bottom: 5px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  /* --atlas is set by the .s-row--{code} classes on a per-collection section.
+     A category section spans all three collections and sets none, so the
+     fallback is what it gets -- a neutral rule rather than an unstyled one. */
+  border-bottom: 2px solid var(--atlas, var(--line));
+}
+
+.s-groupName{
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  font-weight: 400;
+  color: var(--text);
+  text-decoration: none;
+}
+.s-groupName:hover{ color: var(--accent); }
+
+.s-groupCount{
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.s-empty{
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 16px 2px;
+}
+.s-emptyGroup{ padding: 6px 2px; font-size: 0.82rem; opacity: 0.8; }
+
+.s-more{ text-align: center; margin-top: 18px; }
+
+.s-moreBtn{
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 18px;
+  cursor: pointer;
+}
+.s-moreBtn:hover{ border-color: var(--accent); color: var(--accent); }
+
+/* -------------------------------------------------------------- footer */
+.s-footer{
+  border-top: 1px solid var(--rule);
+  padding: 16px 18px 24px;
+  text-align: center;
+}
+.s-footer .bottom-links{ margin-bottom: 6px; }
+
+.s-footnote{
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+/* ------------------------------------------------------------- narrow */
+@media (max-width: 720px){
+  .s-topbar{
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  /* The query is the page, so it takes the full second line rather than
+     being squeezed between the brand and the controls. */
+  .s-searchWrap{ order: 3; flex: 1 0 100%; }
+  .s-main{ padding: 14px 12px 32px; }
+  .s-badges{ margin-left: 0; }
+  .s-crumb{ display: none; }
+}
+
+/* The local-only plain-text badge, shown when an Atlas is running with
+   `serve_docs.py --fulltext`. Deliberately quiet: a dev affordance that never
+   renders on the published site. */
+.s-badgeLocal { opacity: 0.65; }
+.s-badgeLocal:hover { opacity: 1; }
