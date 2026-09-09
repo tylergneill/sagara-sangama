@@ -1,0 +1,60 @@
+{
+  "generated": "2026-09-09T02:13:19+00:00",
+  "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
+  "total_texts": 18890,
+  "total_iast_bytes": 3270283582,
+  "sized_atlases": 3,
+  "atlases": [
+    {
+      "slug": "sanskrit-wikisource-atlas",
+      "name": "Sanskrit Wikisource",
+      "site": "sa.wikisource.org",
+      "site_url": "https://sa.wikisource.org",
+      "atlas_url": "https://tylergneill.github.io/sanskrit-wikisource-atlas",
+      "repo": "https://github.com/tylergneill/sanskrit-wikisource-atlas",
+      "noun": "texts",
+      "texts": 3605,
+      "nodes": 26776,
+      "iast_bytes": 816206664,
+      "sized": null,
+      "avg_iast_bytes": 226409.61553398057,
+      "pdfs": 543,
+      "last_changed": "2026-08-31T06:45:18Z",
+      "tree_mtime": "2026-09-04T18:35:33+00:00"
+    },
+    {
+      "slug": "e-bharatisampat-atlas",
+      "name": "E-bhāratīsampat",
+      "site": "ebharatisampat.in",
+      "site_url": "https://ebharatisampat.in",
+      "atlas_url": "https://tylergneill.github.io/e-bharatisampat-atlas",
+      "repo": "https://github.com/tylergneill/e-bharatisampat-atlas",
+      "noun": "texts",
+      "texts": 5529,
+      "nodes": 11066,
+      "iast_bytes": 2321452556,
+      "sized": 5528,
+      "avg_iast_bytes": 419868.4311810454,
+      "pdfs": 9421,
+      "last_changed": null,
+      "tree_mtime": "2026-09-09T02:12:59+00:00"
+    },
+    {
+      "slug": "sanskrit-documents-atlas",
+      "name": "Sanskrit Documents",
+      "site": "sanskritdocuments.org",
+      "site_url": "https://sanskritdocuments.org",
+      "atlas_url": "https://tylergneill.github.io/sanskrit-documents-atlas",
+      "repo": "https://github.com/tylergneill/sanskrit-documents-atlas",
+      "noun": "texts",
+      "texts": 9756,
+      "nodes": 9756,
+      "iast_bytes": 132624362,
+      "sized": null,
+      "avg_iast_bytes": 13594.133046330464,
+      "pdfs": 873,
+      "last_changed": null,
+      "tree_mtime": "2026-09-07T23:19:45+00:00"
+    }
+  ]
+}
