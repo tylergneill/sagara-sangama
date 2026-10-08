@@ -71,6 +71,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -78,6 +79,29 @@ from pathlib import Path
 # Atlases live beside this project: sagara-sangama/{sagara-sangama,atlases}/
 ATLAS_ROOT = Path(__file__).resolve().parent.parent / "atlases"
 TREE = Path("docs") / "data" / "tree.json"
+# A stopgap, and the one file read outside docs/data/ -- see CONTRACT.md,
+# "The one exception". Goes when every Atlas publishes `all_stats.sourced`.
+VERSION = Path("docs") / "VERSION"
+_CONTENT_VERSION_RE = re.compile(
+    r'^__content_version__\s*=\s*["\']?(\d{4}-\d{2}-\d{2})', re.M)
+
+
+def read_sourced(stats: dict, atlas_dir: Path) -> str | None:
+    """When the Atlas took its copy of the collection, as YYYY-MM-DD.
+
+    `all_stats.sourced` where the tree publishes it; until all five do, the
+    `__content_version__` line of docs/VERSION, which is the same date each
+    Atlas prints on its own About page as "data last sourced". None when
+    neither is there -- the card then shows no date rather than a guess.
+    """
+    if stats.get("sourced"):
+        return str(stats["sourced"])[:10]
+    try:
+        match = _CONTENT_VERSION_RE.search(
+            (atlas_dir / VERSION).read_text(encoding="utf-8"))
+    except OSError:
+        return None
+    return match.group(1) if match else None
 
 # slug -> how the home page should label it
 ATLASES = (
@@ -184,6 +208,10 @@ def read_atlas(spec: dict, root: Path) -> dict:
 
     # the Atlas's own notion of currency, where it keeps one
     out["last_changed"] = stats.get("last_changed")
+    # When the copy was taken: what the home card prints as "as of". Not
+    # tree_mtime below, which is only when the file was last rewritten -- a
+    # rebuild from an old fetch moves that and leaves the content where it was.
+    out["sourced"] = read_sourced(stats, root / spec["slug"])
     out["tree_mtime"] = datetime.fromtimestamp(
         path.stat().st_mtime, timezone.utc).isoformat(timespec="seconds")
     return out
@@ -240,7 +268,7 @@ def main() -> None:
             print(f"  {a['name']:26} {a['texts']:>8,} "
                   f"{num(a['iast_bytes'] and a['iast_bytes'] / 1e6, '>9,.1f', 9)} "
                   f"{num(a['avg_iast_bytes'] and a['avg_iast_bytes'] / 1e3, '>8,.1f', 8)} "
-                  f"{num(a['pdfs'], '>8,', 8)}   {a['tree_mtime'][:10]}")
+                  f"{num(a['pdfs'], '>8,', 8)}   {a['sourced'] or '--'}")
         total_mb = (result["total_iast_bytes"] or 0) / 1e6
         print(f"  {'total':26} {result['total_texts']:>8,} "
               f"{total_mb:>9,.1f}"
