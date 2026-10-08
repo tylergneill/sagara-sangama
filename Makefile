@@ -76,7 +76,7 @@ data: counts growth search
 #   make logo STYLE=bindu
 #   make logo N=4 K=0.55 STYLE=ring+bindu
 N ?= 5
-K ?= 0.45
+K ?= 0.52
 STYLE ?= bindu
 LOGO_SIZE ?= 512
 FAVICON_SIZE ?= 24
