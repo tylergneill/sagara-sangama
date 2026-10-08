@@ -107,7 +107,9 @@ fetch("./data/counts.json")
       // is a claim about currency, and a wrong one is worse than none.
       const dateEl = box.querySelector(".atlas-date");
       if (dateEl) {
-        const when = monthYear(atlas.tree_mtime);
+        // `sourced` is when the Atlas took its copy. Never the tree file's
+        // own timestamp: that moves on every rebuild, fetch or no fetch.
+        const when = monthYear(atlas.sourced);
         dateEl.textContent = when ? `as of ${when}` : "";
       }
     }
