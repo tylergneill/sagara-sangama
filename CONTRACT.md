@@ -11,6 +11,15 @@ Not an Atlas's pipeline scripts, not its `data/` working files, not its caches
 or intermediate JSONL. Only the artifacts each Atlas already publishes to build
 its own site.
 
+**The one exception, and it is temporary.** The date on each home-page card
+("as of …") is when the Atlas took its copy of the collection, and no
+`tree.json` publishes that yet. Until each does, as `all_stats.sourced`, it is
+read from the `__content_version__` line of the Atlas's `docs/VERSION` — a
+published file, and the same date the Atlas prints on its own About page as
+"data last sourced". `collect_atlas_counts.py` already prefers
+`all_stats.sourced` where it exists; when all five publish it, the fallback
+and this paragraph go.
+
 ## Why
 
 An Atlas's `docs/data/tree.json` and `docs/data/changelog.json` are deliberate
@@ -112,7 +121,8 @@ From `all_stats` in each `tree.json`:
 | `transliterated_bytes` | MB (IAST) | script-neutral; `content_bytes` inflates Devanāgarī at ~3 bytes a character |
 | `sized` | — | how many works the byte figures cover; below `text_count` means the totals are a floor. Collected, not currently shown |
 | `pdf_count` | PDFs | works with a scan, deduplicated |
-| `last_changed` | currency | the Atlas's own notion, where it keeps one |
+| `last_changed` | — | the newest change in the collection itself, where the Atlas keeps one. Collected, not currently shown |
+| `sourced` | the card's "as of" date | when the Atlas took its copy; from `docs/VERSION` until the trees publish it (see the exception above) |
 
 Averages divide by `text_count`, never by `sized`: this layer counts items with
 searchable text, so "how long is a text here" is the question, not "how far has

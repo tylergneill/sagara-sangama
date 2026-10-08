@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-08T17:48:16+00:00",
+  "generated": "2026-10-08T18:38:56+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
   "total_texts": 22116,
   "total_iast_bytes": 4787865656,
@@ -20,6 +20,7 @@
       "avg_iast_bytes": 218194.07975460123,
       "pdfs": 543,
       "last_changed": "2026-09-30T17:37:13Z",
+      "sourced": "2026-10-01",
       "tree_mtime": "2026-10-08T16:01:11+00:00"
     },
     {
@@ -37,6 +38,7 @@
       "avg_iast_bytes": 419868.4311810454,
       "pdfs": 9421,
       "last_changed": null,
+      "sourced": "2026-09-09",
       "tree_mtime": "2026-09-09T18:16:56+00:00"
     },
     {
@@ -54,6 +56,7 @@
       "avg_iast_bytes": 13596.711297929054,
       "pdfs": 873,
       "last_changed": null,
+      "sourced": "2026-08-15",
       "tree_mtime": "2026-10-08T16:01:19+00:00"
     },
     {
@@ -71,6 +74,7 @@
       "avg_iast_bytes": 628214.4084650688,
       "pdfs": 2465,
       "last_changed": "2026-06-09",
+      "sourced": "2026-06-09",
       "tree_mtime": "2026-10-08T15:53:18+00:00"
     },
     {
@@ -88,6 +92,7 @@
       "avg_iast_bytes": 252762.88334817454,
       "pdfs": 0,
       "last_changed": "2020-09-10",
+      "sourced": "2025-11-30",
       "tree_mtime": "2026-10-08T15:53:07+00:00"
     }
   ]
