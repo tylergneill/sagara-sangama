@@ -223,6 +223,26 @@ function draw(data, host) {
     raw.set(spec.slug, { name: atlas.name, points: mend(spec.slug, atlas.points) });
   }
 
+  /* Every line runs to the newest month any collection reports. A series that
+     stops early has not vanished -- GRETIL closed in 2020 and still holds what
+     it held -- so its last total is carried forward month by month rather than
+     the line being left to end mid-plot, which reads as the collection ending
+     while a neighbour that merely went flat appears to carry on. Monthly, and
+     before grouping, so the period view draws those months as zeros instead of
+     one long slope down to the edge. Measured over every series, hidden or
+     not, so switching one off never moves another's end. */
+  const newest = Math.max(...[...raw.values()]
+    .map((e) => monthIndex(e.points[e.points.length - 1].date)));
+  for (const entry of raw.values()) {
+    const last = entry.points[entry.points.length - 1];
+    const padded = [...entry.points];
+    for (let m = monthIndex(last.date) + 1; m <= newest; m++) {
+      const date = `${Math.floor(m / 12)}-${String(m % 12 + 1).padStart(2, "0")}-01`;
+      padded.push({ ...last, date });
+    }
+    entry.points = padded;
+  }
+
   /* Where the axis starts, in months. Read off the monthly data, and applied
      before grouping: `group` buckets from whatever point it is handed first,
      so clipping afterwards would leave each series bucketed on its own start
