@@ -539,7 +539,12 @@ a[target="_blank"]::after{
   /* The tagline's parenthetical total is the one part that may not fit beside
      its sentence on a narrow screen; nowrap keeps "(19,052 texts)" whole and
      lets it wrap as a unit to the next line. */
-  .portal-search{ margin-top: 18px; }
+  /* Stacked, the five cards push the search a long way down. The portal is a
+     flex column, so the form is reordered between the totals and the logo:
+     logo -> what is here -> how to look through it still holds for the
+     tagline's totals, and the per-collection list follows. */
+  .constellation{ order: 2; }
+  .portal-search{ order: 1; margin-top: 18px; margin-bottom: 8px; }
 }
 
 /* Top-align only when the stacked column is actually taller than the viewport.
