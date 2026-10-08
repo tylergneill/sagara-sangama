@@ -37,11 +37,14 @@ monthly changelog, so `collect_atlas_growth.py` reads them with no new
 branch and `collect_atlas_search.py` has one small reader each. Two things to
 know when reading their figures:
 
-- **Jain Quantum's `text_count` is items with a public OCR text on jainqq.org**
-  (26.8k of 41.6k catalogued), and its byte figures cover only the slice
-  fetched so far (Sanskrit-only on the first build), so `sized` is far below
-  `text_count` and the MB column is a floor. Its text series flattens after
-  2022, when Quantum's index stopped; that is the finding, not a defect.
+- **Jain Quantum publishes its Sanskrit tier only** (decided 2026-10-07):
+  items whose catalogued language is exactly Sanskrit, books and the Āgama
+  shelf, about 2.5k of a 41.6k-item library; `text_count` is those with a
+  public OCR text on jainqq.org, and every one of them is fetched and
+  measured, so `sized == text_count` and the MB column is complete. The rest
+  of the library appears only as `library_*` figures in its `all_stats`. Its
+  text series flattens after 2022, when Quantum's index stopped; that is the
+  finding, not a defect.
 - **GRETIL's unit is provisional**: one work per TEI file plus one per
   legacy-only text, 1,123 in all; its growth series is measured from the
   site's own dated update history and covers 707 of them.
@@ -96,7 +99,7 @@ Results are colour-coded by collection, using the same series colours the
 About page's growth chart uses (`j` violet and `g` amber joined the three in
 2026-10).
 
-**Jain Quantum doubled the index.** 41.6k items took `search.json` from 7.9 MB
-to 17.4 MB raw; 14.8k of them are flagged `po` (no public text) and hidden by
-default like E-bhāratīsampat's scans. If the file becomes a problem, that
-slice is the first candidate for an on-demand load.
+**Jain Quantum indexes its Sanskrit tier only**: 2,465 items, of which the
+504 without a public text are flagged `po` and hidden by default like
+E-bhāratīsampat's scans. (An earlier build indexed the whole 41.6k-item
+library and took `search.json` from 7.9 MB to 17.4 MB; it is 8.3 MB now.)
