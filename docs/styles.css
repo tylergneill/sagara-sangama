@@ -338,12 +338,13 @@ a[target="_blank"]::after{
 /* The logo takes the middle row of the centre column only. Row 1 above it
    belongs to the 12 o'clock Atlas, row 3 below stays empty so the left/right
    links centre on the logo rather than on the whole block. */
+.constellation{ --logo-size: clamp(150px, 26vw, 230px); }
 .logo{
   grid-column: 2;
   grid-row: 2;
   display: block;         /* an <img> is inline by default; block kills the
                              baseline gap under it */
-  width: clamp(150px, 26vw, 230px);
+  width: var(--logo-size);
   height: auto;
   justify-self: center;   /* the centre cell is wider than the logo */
 }
@@ -354,8 +355,10 @@ a[target="_blank"]::after{
    the logo meets the lower drops (5 and 7). Five cards, five drops. */
 .atlas--right { grid-column: 3; grid-row: 2; text-align: left;  align-self: start; padding-top: clamp(8px, 2.2vw, 22px); }
 .atlas--left  { grid-column: 1; grid-row: 2; text-align: right; align-self: start; padding-top: clamp(8px, 2.2vw, 22px); }
-.atlas--bottom-left  { grid-column: 1; grid-row: 3; text-align: right; align-self: start; }
-.atlas--bottom-right { grid-column: 3; grid-row: 3; text-align: left;  align-self: start; }
+/* The row-3 pair is pulled up into the logo's lower half, level with the
+   lower drops (5 and 7 o'clock), as a fraction of the logo's own size. */
+.atlas--bottom-left  { grid-column: 1; grid-row: 3; text-align: right; align-self: start; margin-top: calc(var(--logo-size) * -0.42); }
+.atlas--bottom-right { grid-column: 3; grid-row: 3; text-align: left;  align-self: start; margin-top: calc(var(--logo-size) * -0.42); }
 
 .atlas{ padding: 8px 0; }
 
@@ -410,13 +413,12 @@ a[target="_blank"]::after{
 }
 
 /* ------------------------------------------------------------- the total */
-/* The corpus total, folded into the tagline as a parenthetical rather than
-   standing as its own line under the constellation. It is a fact about the
-   collections the tagline just named, so it reads as an aside there, and the
-   page saves a whole band of vertical space. Slightly dimmer than the tagline
-   around it so it stays subordinate to the sentence it sits inside; the
-   number itself takes the body colour, as it did on its own line. */
-.tagline-total{ opacity: 0.8; white-space: nowrap; }
+/* The corpus total, a parenthetical on its own line directly under the
+   tagline (2026-10: with the IAST total beside the text count it grew too
+   long to sit inside the sentence). Still a fact about the collections the
+   tagline just named, so it stays inside the same <p>, slightly dimmer than
+   the sentence above it; the numbers take the body colour. */
+.tagline-total{ display: block; margin-top: 2px; opacity: 0.8; white-space: nowrap; }
 .tagline-total strong{ color: var(--text); font-weight: 600; }
 
 /* ---------------------------------------------------------- bottom links */
@@ -513,7 +515,15 @@ a[target="_blank"]::after{
     grid-column: 1;
     grid-row: auto;
     text-align: center;
+    /* Stacked in one column, the desktop nudges toward the drops (the row-2
+       padding, the row-3 negative margin) have nothing to aim at and only
+       collide the cards. */
+    margin-top: 0;
+    padding-top: 4px;
   }
+  /* Beside its sentence the total stayed whole with nowrap; on its own line
+     at phone width it has to be allowed to wrap. */
+  .tagline-total{ white-space: normal; }
   /* The rows are flex containers, so their justify-content beats text-align --
      centre them explicitly or each Atlas keeps its desktop edge alignment. */
   .atlas--top .atlas-links,   .atlas--top .atlas-meta,
