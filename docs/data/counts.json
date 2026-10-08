@@ -1,8 +1,8 @@
 {
-  "generated": "2026-10-08T02:49:45+00:00",
+  "generated": "2026-10-08T17:48:16+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
-  "total_texts": 21974,
-  "total_iast_bytes": 4786064755,
+  "total_texts": 22116,
+  "total_iast_bytes": 4787865656,
   "sized_atlases": 5,
   "atlases": [
     {
@@ -13,14 +13,14 @@
       "atlas_url": "https://tylergneill.github.io/sanskrit-wikisource-atlas",
       "repo": "https://github.com/tylergneill/sanskrit-wikisource-atlas",
       "noun": "texts",
-      "texts": 3605,
-      "nodes": 26776,
-      "iast_bytes": 816206664,
+      "texts": 3749,
+      "nodes": 26793,
+      "iast_bytes": 818009605,
       "sized": null,
-      "avg_iast_bytes": 226409.61553398057,
+      "avg_iast_bytes": 218194.07975460123,
       "pdfs": 543,
-      "last_changed": "2026-08-31T06:45:18Z",
-      "tree_mtime": "2026-09-09T21:44:22+00:00"
+      "last_changed": "2026-09-30T17:37:13Z",
+      "tree_mtime": "2026-10-08T16:01:11+00:00"
     },
     {
       "slug": "e-bharatisampat-atlas",
@@ -37,7 +37,7 @@
       "avg_iast_bytes": 419868.4311810454,
       "pdfs": 9421,
       "last_changed": null,
-      "tree_mtime": "2026-09-09T22:02:10+00:00"
+      "tree_mtime": "2026-09-09T18:16:56+00:00"
     },
     {
       "slug": "sanskrit-documents-atlas",
@@ -47,14 +47,14 @@
       "atlas_url": "https://tylergneill.github.io/sanskrit-documents-atlas",
       "repo": "https://github.com/tylergneill/sanskrit-documents-atlas",
       "noun": "texts",
-      "texts": 9756,
+      "texts": 9754,
       "nodes": 9756,
-      "iast_bytes": 132624362,
+      "iast_bytes": 132622322,
       "sized": null,
-      "avg_iast_bytes": 13594.133046330464,
+      "avg_iast_bytes": 13596.711297929054,
       "pdfs": 873,
       "last_changed": null,
-      "tree_mtime": "2026-09-09T22:01:50+00:00"
+      "tree_mtime": "2026-10-08T16:01:19+00:00"
     },
     {
       "slug": "jain-quantum-atlas",
@@ -71,7 +71,7 @@
       "avg_iast_bytes": 628214.4084650688,
       "pdfs": 2465,
       "last_changed": "2026-06-09",
-      "tree_mtime": "2026-10-08T02:49:29+00:00"
+      "tree_mtime": "2026-10-08T15:53:18+00:00"
     },
     {
       "slug": "gretil-atlas",
@@ -88,7 +88,7 @@
       "avg_iast_bytes": 252762.88334817454,
       "pdfs": 0,
       "last_changed": "2020-09-10",
-      "tree_mtime": "2026-10-08T01:54:32+00:00"
+      "tree_mtime": "2026-10-08T15:53:07+00:00"
     }
   ]
 }

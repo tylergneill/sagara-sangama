@@ -15,7 +15,8 @@ calls a text -- and each says so in `all_stats.text_count`.  The walks below
 reproduce that number exactly, which is the check that this file is reading
 each collection the way its own Atlas does:
 
-    sanskrit-documents   9756 documents            == all_stats.text_count
+    sanskrit-documents   9756 documents, less the  == all_stats.text_count
+                         few that are empty pages
     wikisource           3805 pages + Index items  == all_stats.text_count
     e-bharatisampat     11066 works                 > all_stats.text_count 5491
 
@@ -304,6 +305,11 @@ def read_sanskrit_documents(tree: dict, tables: "Tables") -> list[dict]:
                 # not necessarily the one it was encoded from -- the Atlas is
                 # careful about that and so is the tooltip in search.js.
                 "scan": [s.get("u") for s in (meta.get("scans") or []) if s.get("u")],
+                # A page the site serves with a metadata block and no text. The
+                # Atlas publishes these with `text_count` 0 and leaves them out
+                # of its total, so they are flagged like E-bhāratīsampat's
+                # scans: indexed, findable, and out of the default counts.
+                "po": None if stats.get("text_count", 1) else 1,
             }))
     return out
 

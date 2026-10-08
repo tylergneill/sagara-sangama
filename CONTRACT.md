@@ -133,10 +133,10 @@ the Atlas that owns it derives it — enforced at build time rather than trusted
 
 | Atlas | Indexed | Against | Rule |
 | --- | --- | --- | --- |
-| sanskrit-documents | 9756 | `text_count` 9756 | the folders branch enumerates the corpus; the topics branch is multi-valued and would double-count |
-| wikisource | 3805 | `text_count` 3805 | pages with `own_stats.text_count >= 1`, plus Index items — **and the root node's own 11 pages**, which are easy to miss and land the walk one short |
-| e-bhāratīsampat | 11066 | `text_count` 5491 | the one expected excess: 5575 works are PDF-only scans, indexed and flagged `po` |
-| jain-quantum | 2465 | `text_count` 1961 | the Sanskrit tier only (books whose catalogued language is exactly Sanskrit); the 504 without a public Quantum text are indexed and flagged `po`, like the scans above |
+| sanskrit-documents | 9756 | `text_count` 9754 | the folders branch enumerates the corpus; the topics branch is multi-valued and would double-count. The 2 pages the site serves with metadata and no text are indexed and flagged `po` |
+| wikisource | 3825 | `text_count` 3749 | pages with `own_stats.text_count >= 1`, plus Index items — **and the root node's own 11 pages**, which are easy to miss and land the walk one short. The 76 Index items with no text yet are flagged `po` |
+| e-bhāratīsampat | 11066 | `text_count` 5529 | the largest excess: 5537 works are PDF-only, indexed and flagged `po` |
+| jain-quantum | 2465 | `text_count` 1961 | the Sanskrit tier only (books whose catalogued language is exactly Sanskrit); the 504 without a public Quantum text are indexed and flagged `po`, like the PDF-only works above |
 | gretil | 1123 | `text_count` 1123 | one work per TEI file plus one per legacy-only text; every work has text, so nothing is flagged |
 
 Two judgments worth keeping:

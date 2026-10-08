@@ -215,10 +215,10 @@ function rehydrate(data) {
     if (it.a === "d") {
       it.u = `${SD_SITE}/${it.i}.html`;
       // No per-format download badges, matching the Atlas: its own row offers
-      // the title, the size and the scan, and nothing else. Six near-identical
-      // "... PDF" badges per row is most of the row's width spent on links to
-      // one document's transliterations, and it crowds out `scan`, which is
-      // the badge that says something the title does not. The formats are one
+      // the title, the size and the print-source PDF, and nothing else. Six
+      // near-identical "... PDF" badges per row is most of the row's width
+      // spent on links to one document's transliterations, and it crowds out
+      // the print-source `PDF`, the badge that says something the title does not. The formats are one
       // click away on the document's own page. `it.fmt` is still in the index
       // (see DOWNLOAD_SUFFIXES above, kept in step with the Atlas) so this is
       // a rendering decision, reversible without a reindex.
@@ -631,7 +631,7 @@ function metaBits(it) {
   if (date) bits.push(date);
 
   // Properties of the item, NOT links. They used to sit in the badge row
-  // beside `text`/`PDF`/`scan`, where an unclickable pill reads as a broken
+  // beside `text`/`PDF`, where an unclickable pill reads as a broken
   // link -- they name what a thing IS, while a badge names somewhere to go.
   // Last in the meta line, so the identifying facts (author, year, size) stay
   // at the front where they are scanned for.
@@ -639,7 +639,8 @@ function metaBits(it) {
   if (it.pf) bits.push("proofing");
   // Wikisource's scans are .pdf, .djvu and .tif alike, so "PDF only" would be
   // wrong there; e-bhāratīsampat's really are all PDFs.
-  if (it.po) bits.push(it.a === "w" ? "image only" : it.a === "j" ? "no public text" : "PDF only");
+  if (it.po) bits.push(it.a === "w" ? "image only" : it.a === "j" ? "no public text"
+                       : it.a === "d" ? "empty page" : "PDF only");
   return bits;
 }
 
@@ -789,14 +790,18 @@ function renderRow(it) {
   }
 
   for (const href of (it.scan || [])) {
-    badges.append(badge("scan", href,
-      "A scan of an edition containing this text — not necessarily the one it was encoded from",
+    // Labelled "PDF", the cluster's word for a page-image copy, though most of
+    // these open archive.org's viewer rather than a .pdf: that is how they are
+    // used, and the file is one click away there. The site's own generated
+    // PDFs are not linked from these rows, so the label has no rival.
+    badges.append(badge("PDF", href,
+      "A PDF of a printed edition containing this text — not necessarily the one it was encoded from",
       "s-badgeScan"));
   }
 
   // ALWAYS LAST. The published links come first -- they are what the row
   // is about -- and this local-only affordance sits at the end of the
-  // row, after `scan`, so the badge order does not shift depending on
+  // row, after the print-source `PDF`, so the badge order does not shift depending on
   // which mode the server is in.
   //
   // The locally cached plain text, served by an Atlas's own
@@ -1029,7 +1034,7 @@ function renderStatus(hits) {
   // The PDF-only works are the one place the visible count can disagree with
   // the totals the home page publishes, so the page says which it is showing.
   if (state.showPdfOnly) {
-    parts.push("including scans with no text");
+    parts.push("including PDFs with no text");
   }
   // Categories are multi-valued in two of the three collections, so a work
   // appears under each of its categories and the section counts add up to
