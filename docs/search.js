@@ -173,12 +173,18 @@ const state = {
   // hundreds of small headings where 1 yields a handful of broad ones.
   catDepth: 1,
   showPdfOnly: false,
+  // Loose-spelling matching, for collections romanised the Hindi way. Off
+  // unless asked for, and never remembered: it trades precision for reach.
+  fuzzy: false,
   // Atlas codes switched off by their chip. Empty = show all three.
   hidden: new Set(),
   limit: PAGE_SIZE,
   // Per-scheme lowercased title cache, built lazily -- the same shape and the
   // same reason as each Atlas's indexedTitleById.
   translit: new Map(),
+  // Per-item loose-spelling key, built lazily on first fuzzy search. It does
+  // not depend on the scheme, so it is keyed by index alone.
+  fuzzyKeys: new Map(),
 };
 
 const nf = new Intl.NumberFormat("en-US");
@@ -388,6 +394,94 @@ function queryForms(raw) {
   return forms;
 }
 
+/* A much looser key than `fold`, for the fuzzy toggle only.
+
+   The Jain library romanises the Hindi way: "Vadidevsuri" for Vādidevasūri,
+   "Sangrah" for saṅgraha, "Vrutti" for vṛtti, "Gyan" for jñāna. Measured over
+   that collection's own paired titles (its Devanagari against its
+   romanisation, 4,384 words), stripping diacritics alone reconciles 30% of
+   them and the digraph folds reach 47%; dropping short a takes that to 89%.
+   So the rule that does the work is the blunt one, and it is applied to both
+   sides: every "a" goes, long or short, since the marks are already stripped.
+
+   The rest, in the order they are applied: w for v; gy/gn for jñ; chh/ch for
+   c and sh for ś/ṣ; "ri"/"ru" for vocalic ṛ; doubled vowels; m and n taken as
+   one letter; doubled consonants; a word-final h (visarga).
+
+   The nasals are merged everywhere rather than only before a consonant, which
+   is where anusvāra is the issue (Devanagari gives saṃgraha, the library
+   writes Sangrah). The narrower rule fails on the commonest author in the
+   collection: with its short a gone, "Hemchandra" puts m against c and reads
+   as an anusvāra, where Hemacandra's m stands before a vowel and does not.
+
+   Dropping every vowel was measured too and is not done: it adds one point of
+   recall and merges words like samatā, sameta and sumati. */
+function fuzzyFold(s) {
+  return s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/w/g, "v")
+    .replace(/g[yn]/g, "jn")
+    .replace(/chh?/g, "c")
+    .replace(/sh/g, "s")
+    .replace(/r[iu]/g, "r")
+    .replace(/ee/g, "i")
+    .replace(/oo/g, "u")
+    .replace(/m/g, "n")
+    .replace(/a/g, "")
+    .replace(/([a-z])\1+/g, "$1")
+    .replace(/h\b/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+/* Shorter than this after folding and the query is a couple of consonants --
+   "rama" becomes "rm", which is inside dharma, karma and half the index. */
+const FUZZY_MIN = 3;
+
+/* Devanagari to IAST for the fuzzy key, whatever scheme is on screen: the
+   fold works on Latin letters, so a title has to be romanised to take part. */
+function toIast(text) {
+  if (!text || !DEVANAGARI.test(text) || !hasSanscript()) return text || "";
+  try {
+    return window.Sanscript.t(text, "devanagari", "iast");
+  } catch {
+    return text;
+  }
+}
+
+/* Title, Latin label and author, each fuzzy-folded, joined as searchKey joins
+   its own. Built only once the toggle is on: it costs a transliteration per
+   item, which the ordinary search never needs to pay. */
+function fuzzyKey(it, idx) {
+  let v = state.fuzzyKeys.get(idx);
+  if (v === undefined) {
+    const parts = [];
+    for (const field of [it.n, it.t, it.au]) {
+      const f = field ? fuzzyFold(toIast(field)) : "";
+      if (f) parts.push(f);
+    }
+    v = parts.join("\u001f");
+    state.fuzzyKeys.set(idx, v);
+  }
+  return v;
+}
+
+/* The query for fuzzy matching: one form, and none when it folds too short. */
+function fuzzyQuery(raw) {
+  const q = fuzzyFold(toIast(raw.trim()));
+  return q.length >= FUZZY_MIN ? q : "";
+}
+
+/* Scores 6 and 7, below every ordinary match (0-4): a loose hit is a
+   suggestion, and must never outrank a title that matched as typed. */
+function fuzzyScore(hay, q) {
+  const at = hay.indexOf(q);
+  if (at < 0) return -1;
+  return at === 0 || hay[at - 1] === " " || hay[at - 1] === "\u001f" ? 6 : 7;
+}
+
 /* ------------------------------------------------------------------ *
  * Searching
  * ------------------------------------------------------------------ */
@@ -424,6 +518,7 @@ function bestScore(hay, title, folded, forms) {
 
 function search() {
   const forms = queryForms(state.q);
+  const fuzzyQ = state.fuzzy ? fuzzyQuery(state.q) : "";
   const out = [];
 
   for (let i = 0; i < state.items.length; i++) {
@@ -440,7 +535,10 @@ function search() {
       out.push({ it, score: 5, title: k.title });
       continue;
     }
-    const score = bestScore(k.hay, k.title, k.folded, forms);
+    let score = bestScore(k.hay, k.title, k.folded, forms);
+    // Fuzzy is only ever a second chance: an item that matched as typed keeps
+    // the score it earned.
+    if (score < 0 && fuzzyQ) score = fuzzyScore(fuzzyKey(it, i), fuzzyQ);
     if (score >= 0) out.push({ it, score, title: k.title });
   }
 
@@ -917,6 +1015,16 @@ function renderStatus(hits) {
     : `${nf.format(total)} titles`);
   if (total > shown) parts.push(`showing the first ${nf.format(shown)}`);
 
+  // How many of the matches only the loose spelling found, so a reader can
+  // tell a real hit from a suggestion -- and is told when the query is too
+  // short for the toggle to have done anything.
+  if (state.fuzzy && state.q) {
+    const loose = hits.filter((h) => h.score >= 6).length;
+    parts.push(fuzzyQuery(state.q)
+      ? `fuzzy spelling: ${nf.format(loose)} of them matched loosely, listed last`
+      : "fuzzy spelling needs a longer query");
+  }
+
   // The PDF-only works are the one place the visible count can disagree with
   // the totals the home page publishes, so the page says which it is showing.
   if (state.showPdfOnly) {
@@ -989,6 +1097,7 @@ function syncUrl() {
     if (state.catDepth !== 1) p.set("depth", String(state.catDepth));
   }
   if (state.showPdfOnly) p.set("pdfonly", "1");
+  if (state.fuzzy) p.set("fuzzy", "1");
   for (const code of state.hidden) p.append("hide", code);
   const qs = p.toString();
   history.replaceState(null, "", qs ? `?${qs}` : location.pathname);
@@ -1012,6 +1121,7 @@ function readUrl() {
     state.catDepth = Number(rawDepth);
   }
   state.showPdfOnly = p.get("pdfonly") === "1";
+  state.fuzzy = p.get("fuzzy") === "1";
   for (const code of p.getAll("hide")) {
     if (ATLASES[code]) state.hidden.add(code);
   }
@@ -1043,6 +1153,7 @@ async function init() {
   const byCat = document.getElementById("groupByCategory");
   const depthWrap = document.getElementById("catDepthWrap");
   const pdfOnly = document.getElementById("showPdfOnly");
+  const fuzzy = document.getElementById("fuzzySpelling");
   const more = document.getElementById("moreBtn");
 
   input.value = state.q;
@@ -1050,6 +1161,7 @@ async function init() {
   group.checked = state.groupByAtlas;
   byCat.checked = state.groupByCategory;
   pdfOnly.checked = state.showPdfOnly;
+  fuzzy.checked = state.fuzzy;
   syncDepthUI();
   clear.hidden = !state.q;
 
@@ -1135,6 +1247,13 @@ async function init() {
 
   pdfOnly.addEventListener("change", () => {
     state.showPdfOnly = pdfOnly.checked;
+    state.limit = PAGE_SIZE;
+    render();
+    syncUrl();
+  });
+
+  fuzzy.addEventListener("change", () => {
+    state.fuzzy = fuzzy.checked;
     state.limit = PAGE_SIZE;
     render();
     syncUrl();
