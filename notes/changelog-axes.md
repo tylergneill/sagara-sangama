@@ -67,3 +67,21 @@ Each Atlas should publish **what kind** of series it is — `measured` /
 `approximated` / `inferred` — so the parent can caveat per-series instead of
 applying one disclaimer to all three. SW is measured, SD approximated, EBS
 inferred from serial order. Not built.
+
+## The two 2026-10 Atlases
+
+Both publish E-bhāratīsampat's dict shape (`periods`, monthly,
+`cumulative_text_count`, `cumulative_iast_bytes_total`), so no new reader was
+needed. What kind of series each is:
+
+- **Jain Quantum** — *measured* from the library's own accession stamps
+  (`web_date` on every API item), but its `text_count` series counts items
+  with a Quantum booktext and so flattens after 2022, when Quantum's index
+  stopped; `cumulative_count` carries the whole library. Its byte series
+  covers only the fetched slice (Sanskrit-only on the first build) and is a
+  floor. 2,005 Quantum-only rows carry no date (`undated_works`).
+- **GRETIL** — *measured* from the site's own dated update history
+  (hist.html, 498 entries 2001–2020) joined to the main page's anchors. 707
+  of 1,123 works dated; the rest, the Mahābhārata parvans among them, are
+  left out rather than guessed (`undated_works`). The series ends 2020-06,
+  the last update that added a text.
