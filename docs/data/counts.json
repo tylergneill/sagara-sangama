@@ -1,8 +1,8 @@
 {
-  "generated": "2026-10-08T02:02:26+00:00",
+  "generated": "2026-10-08T02:49:45+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
-  "total_texts": 46805,
-  "total_iast_bytes": 4786270189,
+  "total_texts": 21974,
+  "total_iast_bytes": 4786064755,
   "sized_atlases": 5,
   "atlases": [
     {
@@ -64,14 +64,14 @@
       "atlas_url": "https://tylergneill.github.io/jain-quantum-atlas",
       "repo": "https://github.com/tylergneill/jain-quantum-atlas",
       "noun": "texts",
-      "texts": 26792,
-      "nodes": 41587,
-      "iast_bytes": 1232133889,
-      "sized": 1962,
-      "avg_iast_bytes": 45988.873133771274,
-      "pdfs": 40119,
-      "last_changed": "2026-10-03",
-      "tree_mtime": "2026-10-08T01:54:31+00:00"
+      "texts": 1961,
+      "nodes": 2465,
+      "iast_bytes": 1231928455,
+      "sized": 1961,
+      "avg_iast_bytes": 628214.4084650688,
+      "pdfs": 2465,
+      "last_changed": "2026-06-09",
+      "tree_mtime": "2026-10-08T02:49:29+00:00"
     },
     {
       "slug": "gretil-atlas",
