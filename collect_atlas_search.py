@@ -504,8 +504,10 @@ def read_jain_quantum(tree: dict, tables: "Tables") -> list[dict]:
         sizes = w.get("sizes") or {}
         out.append(prune({
             "a": "j",
-            "t": w.get("title"),
-            "n": w.get("title_native"),
+            # `t` is the romanised title (the booktext slug is built from it);
+            # `n` the Indic-script one the row displays, as for sanskrit-documents.
+            "t": w.get("title_en") or w.get("title"),
+            "n": w.get("title") if w.get("title") != w.get("title_en") else None,
             "i": w.get("id"),
             "lt": 1 if w.get("has_text") else None,
             "b": sizes.get("transliterated_bytes"),
