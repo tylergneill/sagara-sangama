@@ -64,8 +64,9 @@ data: counts growth search
 # at their own size rather than one scaled twice, so the small one keeps the
 # thicker ring the script gives it. The HTML points at these two names.
 #
-#   N      petal count           3
-#   K      petal fatness         0.5, must stay under sin(pi/N)
+#   N      petal count           5 (one per Atlas; was 3 until 2026-10)
+#   K      petal fatness         0.45, must stay under sin(pi/N); at 5 drops
+#                                0.5 closes the gaps and reads as a flower
 #   STYLE  ring | gapped-ring | bindu | ring+bindu | gapped-ring+bindu
 #            ring         struck across the petals
 #            gapped-ring  floats in a cleared band
@@ -74,9 +75,9 @@ data: counts growth search
 #
 #   make logo STYLE=bindu
 #   make logo N=4 K=0.55 STYLE=ring+bindu
-N ?= 3
-K ?= 0.5
-STYLE ?= gapped-ring
+N ?= 5
+K ?= 0.45
+STYLE ?= bindu
 LOGO_SIZE ?= 512
 FAVICON_SIZE ?= 24
 

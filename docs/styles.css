@@ -349,11 +349,13 @@ a[target="_blank"]::after{
 }
 
 .atlas--top   { grid-column: 2; grid-row: 1; }
-.atlas--right { grid-column: 3; grid-row: 2; text-align: left; }
-.atlas--left  { grid-column: 1; grid-row: 2; text-align: right; }
-/* The two 2026-10 Atlases take row 3, flanking the empty cell under the logo. */
-.atlas--bottom-left  { grid-column: 1; grid-row: 3; text-align: right; }
-.atlas--bottom-right { grid-column: 3; grid-row: 3; text-align: left; }
+/* The row-2 pair sits high in its row, level with the logo's upper drops
+   (2:30 and 9:30), rather than centred on the bindu; the row-3 pair below
+   the logo meets the lower drops (5 and 7). Five cards, five drops. */
+.atlas--right { grid-column: 3; grid-row: 2; text-align: left;  align-self: start; padding-top: clamp(8px, 2.2vw, 22px); }
+.atlas--left  { grid-column: 1; grid-row: 2; text-align: right; align-self: start; padding-top: clamp(8px, 2.2vw, 22px); }
+.atlas--bottom-left  { grid-column: 1; grid-row: 3; text-align: right; align-self: start; }
+.atlas--bottom-right { grid-column: 3; grid-row: 3; text-align: left;  align-self: start; }
 
 .atlas{ padding: 8px 0; }
 
