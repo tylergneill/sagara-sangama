@@ -55,6 +55,16 @@
     </div>
 
     <nav class="s-nav">
+      <!-- Beside the box it changes the meaning of, not down among the result
+           filters. Off by default and not remembered between visits: it finds
+           "Vadidevsuri" from "Vādidevasūri" by ignoring short a and the
+           Hindi-style digraphs, and so also finds things nobody meant. -->
+      <label class="s-toggle"
+             title="Also match loosely spelled names and titles: short a ignored, sh/ch/w/gy and ri/ru folded, so “Vādidevasūri” finds “Vadidevsuri”. Loose matches are listed after the exact ones.">
+        <input type="checkbox" id="fuzzySpelling" />
+        <span>fuzzy spelling</span>
+      </label>
+      <span class="s-sep">|</span>
       <label class="s-navlabel" for="scheme">अ→a</label>
       <select id="scheme" class="s-select" aria-label="Transliteration scheme">
         <option value="devanagari">देवनागरी</option>
