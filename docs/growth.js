@@ -35,6 +35,8 @@ const SERIES = [
   { slug: "sanskrit-wikisource-atlas", light: "#2a78d6", dark: "#3987e5", wave: "#5aa9f0" },
   { slug: "e-bharatisampat-atlas",     light: "#eb6834", dark: "#d95926", wave: "#f08a4b" },
   { slug: "sanskrit-documents-atlas",  light: "#1baf7a", dark: "#199e70", wave: "#38c793" },
+  { slug: "jain-quantum-atlas",        light: "#8e5bd6", dark: "#9b6ee0", wave: "#b48cf0" },
+  { slug: "gretil-atlas",              light: "#c9a227", dark: "#d4ad2f", wave: "#e6c24d" },
 ];
 
 const state = { metric: "texts", granularity: 12, mode: "cumulative",
