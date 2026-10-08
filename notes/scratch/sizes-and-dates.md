@@ -54,6 +54,21 @@ file-time bug was. So in each Atlas:
 
 `docs/VERSION` stays; each Atlas's own pages read it.
 
+**"Rebuild" means the last step only.** No counts or sizes are recomputed:
+each Atlas's tree builder reads intermediate files already on disk. Costs are
+from `make steps` here, not timed.
+
+| Atlas | Run (from here) | Cost | Watch for |
+| --- | --- | --- | --- |
+| E-bhāratīsampat | `make ebs-build` | ~1 s | its tree dates from 2026-09-09: read the diff for drift beyond the new field |
+| Sanskrit Documents | `make sd-build` | seconds | |
+| Jain Quantum | `make jq-build` | seconds | needs its `data/`; the 15-minute `jq-count-sizes` is not needed if `sizes.jsonl` is there |
+| GRETIL | `make gr-build` **then `make gr-changelog`** | seconds each | **the changelog step is what writes each work's `added` date into `tree.json`; a build alone leaves the tree without them.** On a machine with no `data/`, run `make gr-inventory` and `make gr-count-sizes` first (seconds, offline) |
+| Sanskrit Wikisource | `make ws-process` | minutes | no separate assemble step: this one goes from the dump to the tree |
+
+The expected diff in each `tree.json` is the new `sourced` field, and in
+`docs/VERSION` the pipeline-run date. Anything more is drift worth reading.
+
 ### 3. Then, here
 
 - [ ] `make data`, and check that all five cards show the expected month.
