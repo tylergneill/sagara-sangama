@@ -564,9 +564,10 @@ function search() {
 
 function formatBytes(b) {
   if (b == null) return null;
-  if (b < 1024) return `${b} B`;
-  if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
-  return `${(b / (1024 * 1024)).toFixed(1)} MB`;
+  // Decimal units (1 MB = 1,000,000 bytes), as the home page and every Atlas.
+  if (b < 1e3) return `${b} B`;
+  if (b < 1e6) return `${(b / 1e3).toFixed(1)} KB`;
+  return `${(b / 1e6).toFixed(1)} MB`;
 }
 
 /* "2022-02-01" -> "Feb 2022". Read off the string rather than parsed with
