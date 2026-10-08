@@ -209,6 +209,19 @@ ATLASES = (
         "name": "Sanskrit Documents",
         "stats_key": None,
     },
+    # Both of the 2026-10 Atlases publish E-bhāratīsampat's dict shape, monthly.
+    # Jain Quantum's text series is measured from the library's own accession
+    # stamps and flattens after 2022, when Quantum's index stopped; GRETIL's
+    # comes from the site's dated update history, the one truly measured
+    # series in the cluster.
+    {
+        "slug": "jain-quantum-atlas",
+        "name": "Jain Quantum",
+    },
+    {
+        "slug": "gretil-atlas",
+        "name": "GRETIL",
+    },
 )
 
 

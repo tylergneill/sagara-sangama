@@ -442,10 +442,53 @@ def sanskritdocuments(root):
     return r
 
 
+def jainquantum(root):
+    r = Report("Jain Quantum", root)
+    if not r.present:
+        return r
+    r.corpus("API metadata cache", "data/metadata_cache/jainelibrary", pattern="*.json",
+             step="(recon pull; fetcher not yet in rivulet)")
+    r.corpus("Quantum catalog cache", "data/metadata_cache/jainqq", pattern="*.json",
+             step="jq-fetch-catalog")
+    r.artifact("catalogue", "data/catalogue.jsonl",
+               inputs=["data/metadata_cache/jainqq"], step="jq-parse-catalog")
+    # The denominator is the slice chosen for fetching, not every sized row:
+    # `make jq-fetch-text` defaults to sanskrit-only, and a complete slice must
+    # not read as a 7%-complete corpus.
+    r.corpus("fulltext cache", "data/fulltext_cache", pattern="*.json",
+             step="jq-fetch-text", unit="items")
+    r.artifact("sizes", "data/sizes.jsonl",
+               inputs=["data/fulltext_cache"], step="jq-count-sizes")
+    r.artifact("tree.json", "docs/data/tree.json",
+               inputs=["data/sizes.jsonl", "data/catalogue.jsonl"], step="jq-build")
+    r.artifact("changelog.json", "docs/data/changelog.json",
+               inputs=["docs/data/tree.json"], step="jq-changelog",
+               covers=last_period(root / "docs/data/changelog.json"))
+    return r
+
+
+def gretil(root):
+    r = Report("GRETIL", root)
+    if not r.present:
+        return r
+    # Nothing to acquire: the sources are read-only checkouts under GRETIL_ROOT.
+    r.artifact("inventory", "data/inventory.jsonl", step="gr-inventory")
+    r.artifact("sizes", "data/sizes.jsonl",
+               inputs=["data/inventory.jsonl"], step="gr-count-sizes")
+    r.artifact("tree.json", "docs/data/tree.json",
+               inputs=["data/sizes.jsonl"], step="gr-build")
+    r.artifact("changelog.json", "docs/data/changelog.json",
+               inputs=["docs/data/tree.json"], step="gr-changelog",
+               covers=last_period(root / "docs/data/changelog.json"))
+    return r
+
+
 ATLASES = [
     ("sanskrit-wikisource-atlas", wikisource),
     ("e-bharatisampat-atlas", ebharatisampat),
     ("sanskrit-documents-atlas", sanskritdocuments),
+    ("jain-quantum-atlas", jainquantum),
+    ("gretil-atlas", gretil),
 ]
 
 

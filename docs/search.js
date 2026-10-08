@@ -102,12 +102,29 @@ const ATLASES = {
     url: "https://tylergneill.github.io/sanskrit-documents-atlas",
     light: "#1baf7a", dark: "#199e70", wave: "#38c793",
   },
+  j: {
+    slug: "jain-quantum-atlas",
+    name: "Jain Quantum",
+    site: "jainqq.org",
+    url: "https://tylergneill.github.io/jain-quantum-atlas",
+    light: "#8e5bd6", dark: "#9b6ee0", wave: "#b48cf0",
+  },
+  g: {
+    slug: "gretil-atlas",
+    name: "GRETIL",
+    site: "gretil (mirror)",
+    url: "https://tylergneill.github.io/gretil-atlas",
+    light: "#c9a227", dark: "#d4ad2f", wave: "#e6c24d",
+  },
 };
+
+const JQ_SITE = "https://jainqq.org";
+const GRETIL_MIRROR = "https://tylergneill.github.io/gretil-mirror/gretil";
 
 /* Fixed display order wherever all three are listed -- the chips, and the
    group headings. Alphabetical by name would reorder them if one were
    renamed; this is the constellation's own order, clockwise from the top. */
-const ATLAS_ORDER = ["w", "d", "e"];
+const ATLAS_ORDER = ["w", "d", "e", "j", "g"];
 
 const SD_SITE = "https://sanskritdocuments.org";
 const EB_SITE = "https://www.ebharatisampat.in";
@@ -214,6 +231,20 @@ function rehydrate(data) {
       if (it.pdf) {
         it.fmtLinks.push({ label: "PDF", href: `${EB_SITE}/ebook/index.php?bookid=${it.i}` });
       }
+    } else if (it.a === "j") {
+      // Quantum's viewer for the title; the booktext page, which needs the
+      // title slug as well as the serial, as the `text` badge.
+      it.u = `${JQ_SITE}/explore/${it.i}/1`;
+      it.fmtLinks = [];
+      if (it.txt) {
+        const slug = encodeURIComponent((it.t || "").replace(/ /g, "_"));
+        it.fmtLinks.push({ label: "text", href: `${JQ_SITE}/booktext/${slug}/${it.i}` });
+      }
+    } else if (it.a === "g") {
+      // `i` is the primary file's path under the mirror root: the TEI XML
+      // where one exists, else the legacy HTM.
+      it.u = `${GRETIL_MIRROR}/${it.i}`;
+      it.fmtLinks = [];
     } else {
       it.fmtLinks = [];   // wikisource stores its url whole
     }
@@ -486,6 +517,14 @@ function metaBits(it) {
     if (it.lang && it.lang !== "Sanskrit") bits.push(it.lang);
   } else if (it.a === "w") {
     if (it.sub) bits.push(`${it.sub} ${it.sub === 1 ? "chapter" : "chapters"}`);
+  } else if (it.a === "j") {
+    if (it.au) bits.push(displayDeva(it.au));
+    if (it.y) bits.push(it.y);
+    if (it.pg) bits.push(`${it.pg} pp`);
+    if (it.lang) bits.push(it.lang);
+  } else if (it.a === "g") {
+    if (it.au) bits.push(it.au);
+    bits.push(it.tei ? "TEI" : "legacy only");
   }
   const size = formatBytes(it.b);
   if (size) bits.push(size);
@@ -501,7 +540,7 @@ function metaBits(it) {
   if (it.pf) bits.push("proofing");
   // Wikisource's scans are .pdf, .djvu and .tif alike, so "PDF only" would be
   // wrong there; e-bhāratīsampat's really are all PDFs.
-  if (it.po) bits.push(it.a === "w" ? "image only" : "PDF only");
+  if (it.po) bits.push(it.a === "w" ? "image only" : it.a === "j" ? "no public text" : "PDF only");
   return bits;
 }
 
@@ -537,6 +576,8 @@ const ATLAS_LOCAL_PORTS = {
   "sanskrit-wikisource-atlas": 8001,
   "e-bharatisampat-atlas": 8002,
   "sanskrit-documents-atlas": 8003,
+  "jain-quantum-atlas": 8004,
+  "gretil-atlas": 8005,
 };
 
 /* Which Atlases are actually serving their corpus right now. Probed once at

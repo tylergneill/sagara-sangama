@@ -1,9 +1,9 @@
 {
-  "generated": "2026-09-09T02:13:19+00:00",
+  "generated": "2026-10-08T02:02:26+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
-  "total_texts": 18890,
-  "total_iast_bytes": 3270283582,
-  "sized_atlases": 3,
+  "total_texts": 46805,
+  "total_iast_bytes": 4786270189,
+  "sized_atlases": 5,
   "atlases": [
     {
       "slug": "sanskrit-wikisource-atlas",
@@ -20,7 +20,7 @@
       "avg_iast_bytes": 226409.61553398057,
       "pdfs": 543,
       "last_changed": "2026-08-31T06:45:18Z",
-      "tree_mtime": "2026-09-04T18:35:33+00:00"
+      "tree_mtime": "2026-09-09T21:44:22+00:00"
     },
     {
       "slug": "e-bharatisampat-atlas",
@@ -37,7 +37,7 @@
       "avg_iast_bytes": 419868.4311810454,
       "pdfs": 9421,
       "last_changed": null,
-      "tree_mtime": "2026-09-09T02:12:59+00:00"
+      "tree_mtime": "2026-09-09T22:02:10+00:00"
     },
     {
       "slug": "sanskrit-documents-atlas",
@@ -54,7 +54,41 @@
       "avg_iast_bytes": 13594.133046330464,
       "pdfs": 873,
       "last_changed": null,
-      "tree_mtime": "2026-09-07T23:19:45+00:00"
+      "tree_mtime": "2026-09-09T22:01:50+00:00"
+    },
+    {
+      "slug": "jain-quantum-atlas",
+      "name": "Jain Quantum",
+      "site": "jainqq.org",
+      "site_url": "https://jainqq.org",
+      "atlas_url": "https://tylergneill.github.io/jain-quantum-atlas",
+      "repo": "https://github.com/tylergneill/jain-quantum-atlas",
+      "noun": "texts",
+      "texts": 26792,
+      "nodes": 41587,
+      "iast_bytes": 1232133889,
+      "sized": 1962,
+      "avg_iast_bytes": 45988.873133771274,
+      "pdfs": 40119,
+      "last_changed": "2026-10-03",
+      "tree_mtime": "2026-10-08T01:54:31+00:00"
+    },
+    {
+      "slug": "gretil-atlas",
+      "name": "GRETIL",
+      "site": "gretil.sub.uni-goettingen.de",
+      "site_url": "https://tylergneill.github.io/gretil-mirror/gretil.html",
+      "atlas_url": "https://tylergneill.github.io/gretil-atlas",
+      "repo": "https://github.com/tylergneill/gretil-atlas",
+      "noun": "texts",
+      "texts": 1123,
+      "nodes": 1123,
+      "iast_bytes": 283852718,
+      "sized": 1123,
+      "avg_iast_bytes": 252762.88334817454,
+      "pdfs": 0,
+      "last_changed": "2020-09-10",
+      "tree_mtime": "2026-10-08T01:54:32+00:00"
     }
   ]
 }

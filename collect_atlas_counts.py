@@ -108,6 +108,24 @@ ATLASES = (
         "repo": "https://github.com/tylergneill/sanskrit-documents-atlas",
         "noun": "texts",
     },
+    {
+        "slug": "jain-quantum-atlas",
+        "name": "Jain Quantum",
+        "site": "jainqq.org",
+        "site_url": "https://jainqq.org",
+        "atlas_url": "https://tylergneill.github.io/jain-quantum-atlas",
+        "repo": "https://github.com/tylergneill/jain-quantum-atlas",
+        "noun": "texts",
+    },
+    {
+        "slug": "gretil-atlas",
+        "name": "GRETIL",
+        "site": "gretil.sub.uni-goettingen.de",
+        "site_url": "https://tylergneill.github.io/gretil-mirror/gretil.html",
+        "atlas_url": "https://tylergneill.github.io/gretil-atlas",
+        "repo": "https://github.com/tylergneill/gretil-atlas",
+        "noun": "texts",
+    },
 )
 
 

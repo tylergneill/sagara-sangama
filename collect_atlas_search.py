@@ -112,6 +112,8 @@ CODES = {
     "sanskrit-wikisource-atlas": "w",
     "e-bharatisampat-atlas": "e",
     "sanskrit-documents-atlas": "d",
+    "jain-quantum-atlas": "j",
+    "gretil-atlas": "g",
 }
 
 # The per-format download suffixes live in docs/search.js, beside the other
@@ -484,10 +486,81 @@ def read_e_bharatisampat(tree: dict, tables: "Tables") -> list[dict]:
     return out
 
 
+# --------------------------------------------------------------------------
+# jain-quantum and gretil -- both publish the flat works+axes shape
+# --------------------------------------------------------------------------
+
+def read_jain_quantum(tree: dict, tables: "Tables") -> list[dict]:
+    """One record per catalogued item; those without a public text flagged.
+
+    The id is the six-digit sr_no, from which search.js derives the Quantum
+    viewer and booktext URLs (the latter also needs the title, carried as `t`).
+    Items with no Quantum text -- the post-2022 accessions and the scan-only
+    entries -- are indexed but flagged `po`, so the default view agrees with
+    the home page's text_count, exactly as E-bhāratīsampat's PDF-only works.
+    """
+    out: list[dict] = []
+    for w in tree.get("works") or []:
+        sizes = w.get("sizes") or {}
+        out.append(prune({
+            "a": "j",
+            "t": w.get("title"),
+            "n": w.get("title_native"),
+            "i": w.get("id"),
+            "lt": 1 if w.get("has_text") else None,
+            "b": sizes.get("transliterated_bytes"),
+            "d": w.get("added"),
+            "au": w.get("author"),
+            "y": w.get("publish_year"),
+            "pg": str(w["pages"]) if w.get("pages") else None,
+            "lang": w.get("language"),
+            "g": [gid] if (gid := tables.path(
+                "j", [t for t in (w.get("domain"), w.get("sub_domain")) if t]
+            )) is not None else None,
+            "txt": 1 if w.get("text") else None,
+            "pdf": 1 if w.get("pdf") else None,
+            "po": None if w.get("text") else 1,
+        }))
+    return out
+
+
+def read_gretil(tree: dict, tables: "Tables") -> list[dict]:
+    """One record per work: a TEI file, or a legacy-only text.
+
+    `i` is the primary file path under the mirror root (the TEI XML, else the
+    legacy HTM), which is all search.js needs to build the link. Every work
+    has text, so nothing is flagged `po`; `tei` says which layer it is.
+    """
+    out: list[dict] = []
+    for w in tree.get("works") or []:
+        sizes = w.get("sizes") or {}
+        files = w.get("files") or []
+        primary = next((f for f in files if f.endswith(".xml")), None) or \
+            next((f for f in files if f.endswith(".htm") and "/transformations/" not in f), None) or \
+            (files[0] if files else None)
+        out.append(prune({
+            "a": "g",
+            "t": w.get("title"),
+            "i": primary,
+            "lt": w.get("id") if w.get("has_text") else None,
+            "b": sizes.get("transliterated_bytes"),
+            "d": w.get("added"),
+            "au": w.get("author"),
+            "g": [gid] if (gid := tables.path(
+                "g", [t for t in (w.get("domain"), w.get("sub_domain")) if t]
+            )) is not None else None,
+            "txt": 1,
+            "tei": 1 if w.get("tei") else None,
+        }))
+    return out
+
+
 READERS = {
     "sanskrit-documents-atlas": read_sanskrit_documents,
     "sanskrit-wikisource-atlas": read_wikisource,
     "e-bharatisampat-atlas": read_e_bharatisampat,
+    "jain-quantum-atlas": read_jain_quantum,
+    "gretil-atlas": read_gretil,
 }
 
 
