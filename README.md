@@ -36,8 +36,8 @@ make serve       # serve docs/ on :8000
 
 ## Search
 
-`docs/search.html` searches titles across all three collections at once. Three
-collections organised three incompatible ways share no hierarchy to browse, but
+`docs/search.html` searches titles across all five collections at once. Five
+collections organised five incompatible ways share no hierarchy to browse, but
 they do share titles, so search is the whole interface and the one grouping
 offered — **group by atlas** — is the one that is real.
 
@@ -50,7 +50,7 @@ live in the URL, so a result list can be linked to.
 ## Maintaining the Atlases
 
 Each Atlas owns its own pipeline. This repo does not reimplement any of it —
-but it does keep the map, because the three refresh differently and the costs
+but it does keep the map, because the five refresh differently and the costs
 differ by orders of magnitude.
 
 ```sh
@@ -77,4 +77,4 @@ make scroll      # write docs/assets/scroll.svg
 
 [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en).
 Applies to this repo's own code and the aggregate metadata it derives; the
-texts themselves belong to the three source collections and their contributors.
+texts themselves belong to the five source collections and their contributors.

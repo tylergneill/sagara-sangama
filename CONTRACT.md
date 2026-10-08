@@ -95,8 +95,8 @@ note with it. See [notes/changelog-axes.md](notes/changelog-axes.md).
 
 ## The shared publishing format
 
-**Monthly**, across all three Atlases, each period stamped at its start. A
-growth chart puts the three collections on one time axis, and a yearly series
+**Monthly**, across all five Atlases, each period stamped at its start. A
+growth chart puts the collections on one time axis, and a yearly series
 there is a straight line between Decembers laid over its neighbours' real
 shape. Each Atlas's own About page groups those months up to quarters or years
 at render time, so publishing the finest grain costs nothing and the reader
@@ -108,7 +108,7 @@ From `all_stats` in each `tree.json`:
 
 | Field | Used for | Notes |
 | --- | --- | --- |
-| `text_count` | the headline count | the only count comparable across all three; `count` includes non-text nodes and means something different in each Atlas |
+| `text_count` | the headline count | the only count comparable across all five; `count` includes non-text nodes and means something different in each Atlas |
 | `transliterated_bytes` | MB (IAST) | script-neutral; `content_bytes` inflates Devanāgarī at ~3 bytes a character |
 | `sized` | — | how many works the byte figures cover; below `text_count` means the totals are a floor. Collected, not currently shown |
 | `pdf_count` | PDFs | works with a scan, deduplicated |
@@ -136,6 +136,8 @@ the Atlas that owns it derives it — enforced at build time rather than trusted
 | sanskrit-documents | 9756 | `text_count` 9756 | the folders branch enumerates the corpus; the topics branch is multi-valued and would double-count |
 | wikisource | 3805 | `text_count` 3805 | pages with `own_stats.text_count >= 1`, plus Index items — **and the root node's own 11 pages**, which are easy to miss and land the walk one short |
 | e-bhāratīsampat | 11066 | `text_count` 5491 | the one expected excess: 5575 works are PDF-only scans, indexed and flagged `po` |
+| jain-quantum | 2465 | `text_count` 1961 | the Sanskrit tier only (books whose catalogued language is exactly Sanskrit); the 504 without a public Quantum text are indexed and flagged `po`, like the scans above |
+| gretil | 1123 | `text_count` 1123 | one work per TEI file plus one per legacy-only text; every work has text, so nothing is flagged |
 
 Two judgments worth keeping:
 
@@ -170,7 +172,7 @@ From each `changelog.json`, per period, cumulative:
 make counts      # re-read the Atlases, rewrite docs/data/counts.json
 make growth      # ... and docs/data/growth.json, the chart's series
 make search      # ... and docs/data/search.json, the search index
-make data        # all three
+make data        # all three (counts, growth, search), over all five Atlases
 ```
 
 The Atlases are read from `../atlases/<slug>/docs/data/tree.json` by default;
