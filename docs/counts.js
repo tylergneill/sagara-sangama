@@ -116,6 +116,13 @@ fetch("./data/counts.json")
       const total = document.getElementById("totalTexts");
       if (total) total.textContent = nf.format(data.total_texts);
     }
+    // The IAST total, in the same unit and precision as the per-Atlas cards.
+    // Summed only over the Atlases that publish bytes, so it is a floor where
+    // one has sized only part of its corpus (Jain Quantum, on its first build).
+    if (typeof data.total_iast_bytes === "number" && data.total_iast_bytes > 0) {
+      const totalMb = document.getElementById("totalMb");
+      if (totalMb) totalMb.textContent = nf1.format(data.total_iast_bytes / 1e6);
+    }
 
     fillTable(data);
 
