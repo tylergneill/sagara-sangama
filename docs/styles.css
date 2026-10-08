@@ -351,6 +351,9 @@ a[target="_blank"]::after{
 .atlas--top   { grid-column: 2; grid-row: 1; }
 .atlas--right { grid-column: 3; grid-row: 2; text-align: left; }
 .atlas--left  { grid-column: 1; grid-row: 2; text-align: right; }
+/* The two 2026-10 Atlases take row 3, flanking the empty cell under the logo. */
+.atlas--bottom-left  { grid-column: 1; grid-row: 3; text-align: right; }
+.atlas--bottom-right { grid-column: 3; grid-row: 3; text-align: left; }
 
 .atlas{ padding: 8px 0; }
 
@@ -367,6 +370,8 @@ a[target="_blank"]::after{
 .atlas--top   .atlas-links, .atlas--top   .atlas-meta{ justify-content: center; }
 .atlas--right .atlas-links, .atlas--right .atlas-meta{ justify-content: flex-start; }
 .atlas--left  .atlas-links, .atlas--left  .atlas-meta{ justify-content: flex-end; }
+.atlas--bottom-right .atlas-links, .atlas--bottom-right .atlas-meta{ justify-content: flex-start; }
+.atlas--bottom-left  .atlas-links, .atlas--bottom-left  .atlas-meta{ justify-content: flex-end; }
 
 /* Both children ship empty and are filled by counts.js after first paint, so
    without a reserved height this row collapses and everything below it jumps
@@ -502,7 +507,7 @@ a[target="_blank"]::after{
     width: clamp(120px, 34vw, 150px);
   }
   .atlas{ padding: 4px 0; }
-  .atlas--top, .atlas--right, .atlas--left{
+  .atlas--top, .atlas--right, .atlas--left, .atlas--bottom-left, .atlas--bottom-right{
     grid-column: 1;
     grid-row: auto;
     text-align: center;
@@ -511,7 +516,9 @@ a[target="_blank"]::after{
      centre them explicitly or each Atlas keeps its desktop edge alignment. */
   .atlas--top .atlas-links,   .atlas--top .atlas-meta,
   .atlas--right .atlas-links, .atlas--right .atlas-meta,
-  .atlas--left .atlas-links,  .atlas--left .atlas-meta{
+  .atlas--left .atlas-links,  .atlas--left .atlas-meta,
+  .atlas--bottom-left .atlas-links,  .atlas--bottom-left .atlas-meta,
+  .atlas--bottom-right .atlas-links, .atlas--bottom-right .atlas-meta{
     justify-content: center;
   }
 
@@ -934,14 +941,20 @@ a[target="_blank"]::after{
 .s-row--w{ --atlas: #2a78d6; }
 .s-row--e{ --atlas: #eb6834; }
 .s-row--d{ --atlas: #1baf7a; }
+.s-row--j{ --atlas: #8e5bd6; }
+.s-row--g{ --atlas: #c9a227; }
 
 :root[data-theme="dark"] .s-row--w{ --atlas: #3987e5; }
 :root[data-theme="dark"] .s-row--e{ --atlas: #d95926; }
 :root[data-theme="dark"] .s-row--d{ --atlas: #199e70; }
+:root[data-theme="dark"] .s-row--j{ --atlas: #9b6ee0; }
+:root[data-theme="dark"] .s-row--g{ --atlas: #d4ad2f; }
 
 :root[data-theme="wave"] .s-row--w{ --atlas: #5aa9f0; }
 :root[data-theme="wave"] .s-row--e{ --atlas: #f08a4b; }
 :root[data-theme="wave"] .s-row--d{ --atlas: #38c793; }
+:root[data-theme="wave"] .s-row--j{ --atlas: #b48cf0; }
+:root[data-theme="wave"] .s-row--g{ --atlas: #e6c24d; }
 
 /* How much of the hue reaches the background. Light mode can take less than
    the dark modes: a pale wash on white shows at a lower percentage than the

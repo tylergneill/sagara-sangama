@@ -15,6 +15,8 @@ const LOCAL_PORTS = {
   "sanskrit-wikisource-atlas": 8001,
   "e-bharatisampat-atlas": 8002,
   "sanskrit-documents-atlas": 8003,
+  "jain-quantum-atlas": 8004,
+  "gretil-atlas": 8005,
 };
 
 const PAGES_PREFIX = "https://tylergneill.github.io/";
