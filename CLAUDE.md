@@ -43,8 +43,8 @@ know when reading their figures:
   public OCR text on jainqq.org, and every one of them is fetched and
   measured, so `sized == text_count` and the MB column is complete. The rest
   of the library appears only as `library_*` figures in its `all_stats`. Its
-  text series flattens after 2022, when Quantum's index stopped; that is the
-  finding, not a defect.
+  text series flattens after mid-2020, when Quantum's text for the tier stops
+  (its catalog runs on to 2022); that is the finding, not a defect.
 - **GRETIL's unit is provisional**: one work per TEI file plus one per
   legacy-only text, 1,123 in all; its growth series is measured from the
   site's own dated update history and covers 707 of them.
