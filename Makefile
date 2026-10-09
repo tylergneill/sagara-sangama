@@ -252,8 +252,9 @@ sd-build:
 sd-changelog:
 	$(MAKE) -C $(SD) changelog
 
-# The orphan probe runs by default (~20 HEADs, ~40s). It reports INCONCLUSIVE
-# rather than zero when it cannot ask, and leaves the published figure standing.
+# The orphan probe runs by default (~20 HEADs, ~40s) and cannot be switched
+# off. It reports INCONCLUSIVE rather than zero when it cannot ask, and leaves
+# the published figure standing.
 #   ~1 MIN, mostly offline.
 sd-audit:
 	$(MAKE) -C $(SD) audit-update-about
@@ -412,9 +413,9 @@ steps:
 	@echo "    Then here, once any Atlas has rebuilt:"
 	@echo "      make data                 seconds              counts+growth+search"
 	@echo
-	@echo "  * sd-audit runs a ~40s orphan probe by default. It reports"
-	@echo "    INCONCLUSIVE rather than zero when it cannot ask, and leaves the"
-	@echo "    published figure standing. ARGS=--offline-skip-orphans to skip it."
+	@echo "  * sd-audit runs a ~40s orphan probe. It reports INCONCLUSIVE"
+	@echo "    rather than zero when it cannot ask, and leaves the published"
+	@echo "    figure standing."
 	@echo
 	@echo "  A FULL REFRESH is one column then the other, top to bottom, per"
 	@echo "  Atlas. Acquisition is resumable -- Ctrl-C stops cleanly and a rerun"

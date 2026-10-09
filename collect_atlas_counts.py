@@ -62,16 +62,19 @@ in for: the fix belongs upstream, in the Atlas that owns the number.
 Freshness
 ---------
 These are snapshot figures, not live ones, and each Atlas is explicit that its
-numbers move when its snapshot is re-pulled.  The mtime of each tree.json is
-recorded alongside the counts so the page can say how old they are rather than
-implying they are current.  Re-run this after any Atlas re-ingests.
+numbers move when its snapshot is re-pulled.  `all_stats.sourced` -- the date
+the Atlas took its copy, which it stamps from the same value as the
+`__content_version__` its own About page prints -- is carried alongside the
+counts so the page can say how old they are rather than implying they are
+current.  Not the file time of tree.json: a rebuild from an old fetch moves
+that and leaves the content where it was.  Re-run this after any Atlas
+re-ingests.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -79,29 +82,6 @@ from pathlib import Path
 # Atlases live beside this project: sagara-sangama/{sagara-sangama,atlases}/
 ATLAS_ROOT = Path(__file__).resolve().parent.parent / "atlases"
 TREE = Path("docs") / "data" / "tree.json"
-# A stopgap, and the one file read outside docs/data/ -- see CONTRACT.md,
-# "The one exception". Goes when every Atlas publishes `all_stats.sourced`.
-VERSION = Path("docs") / "VERSION"
-_CONTENT_VERSION_RE = re.compile(
-    r'^__content_version__\s*=\s*["\']?(\d{4}-\d{2}-\d{2})', re.M)
-
-
-def read_sourced(stats: dict, atlas_dir: Path) -> str | None:
-    """When the Atlas took its copy of the collection, as YYYY-MM-DD.
-
-    `all_stats.sourced` where the tree publishes it; until all five do, the
-    `__content_version__` line of docs/VERSION, which is the same date each
-    Atlas prints on its own About page as "data last sourced". None when
-    neither is there -- the card then shows no date rather than a guess.
-    """
-    if stats.get("sourced"):
-        return str(stats["sourced"])[:10]
-    try:
-        match = _CONTENT_VERSION_RE.search(
-            (atlas_dir / VERSION).read_text(encoding="utf-8"))
-    except OSError:
-        return None
-    return match.group(1) if match else None
 
 # slug -> how the home page should label it
 ATLASES = (
@@ -208,12 +188,12 @@ def read_atlas(spec: dict, root: Path) -> dict:
 
     # the Atlas's own notion of currency, where it keeps one
     out["last_changed"] = stats.get("last_changed")
-    # When the copy was taken: what the home card prints as "as of". Not
-    # tree_mtime below, which is only when the file was last rewritten -- a
-    # rebuild from an old fetch moves that and leaves the content where it was.
-    out["sourced"] = read_sourced(stats, root / spec["slug"])
-    out["tree_mtime"] = datetime.fromtimestamp(
-        path.stat().st_mtime, timezone.utc).isoformat(timespec="seconds")
+    # When the copy was taken, YYYY-MM-DD: what the home card prints as
+    # "as of". None when the Atlas does not publish it -- the card then shows
+    # no date rather than a guess. (Until 2026-10-08 this fell back to the
+    # Atlas's docs/VERSION, and before that it was tree.json's file time,
+    # which a rebuild from an old fetch moves.)
+    out["sourced"] = stats.get("sourced") or None
     return out
 
 
