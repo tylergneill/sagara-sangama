@@ -21,9 +21,12 @@ Wikisource is the cheap one — a monthly XML dump rather than a crawl.
 E-bhāratīsampat is the expensive one (~6.5h, and needs `make ebs-clearance`
 first). Sanskrit Documents walks ~10k documents in ~5.4h.
 
-Jain Quantum (`jq-`) fetches a Cloudflare-gated catalog (34 requests) and one
-booktext per item (~1.2h for the Sanskrit-only slice); its jainelibrary.org
-API metadata came from a one-off pull. GRETIL (`gr-`) fetches nothing: the
+Jain eLibrary (`jel-`) has two text sources. From jainqq.org ("Jain
+Quantum") it fetches a Cloudflare-gated catalog (34 requests) and one booktext
+per item (~1.2h for the Sanskrit-only slice); from jainelibrary.org, with an
+account the owner logs in to by hand, the library's own OCR files for the
+items Quantum has no text for -- run from the Atlas itself, not from here. Its
+jainelibrary.org API metadata came from a one-off pull. GRETIL (`gr-`) fetches nothing: the
 collection is closed and every copy is on disk, so its whole pipeline is
 offline and runs in seconds.
 
