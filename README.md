@@ -18,7 +18,7 @@ traps. The rest of this file covers what the site is and how to run it.
 | [`sanskrit-wikisource-atlas`](https://github.com/tylergneill/sanskrit-wikisource-atlas) | [Sanskrit Wikisource](https://sa.wikisource.org) |
 | [`e-bharatisampat-atlas`](https://github.com/tylergneill/e-bharatisampat-atlas) | [E-bhāratīsampat](https://ebharatisampat.in) |
 | [`sanskrit-documents-atlas`](https://github.com/tylergneill/sanskrit-documents-atlas) | [Sanskrit Documents](https://sanskritdocuments.org) |
-| [`jain-quantum-atlas`](https://github.com/tylergneill/jain-quantum-atlas) | [Jain Quantum](https://jainqq.org) / [Jain eLibrary](https://jainelibrary.org) |
+| [`jain-elibrary-atlas`](https://github.com/tylergneill/jain-elibrary-atlas) | [Jain eLibrary](https://jainelibrary.org) / [Jain Quantum](https://jainqq.org) |
 | [`gretil-atlas`](https://github.com/tylergneill/gretil-atlas) | [GRETIL](https://tylergneill.github.io/gretil-mirror/gretil.html) |
 
 ## How the numbers get here

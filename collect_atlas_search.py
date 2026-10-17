@@ -113,7 +113,7 @@ CODES = {
     "sanskrit-wikisource-atlas": "w",
     "e-bharatisampat-atlas": "e",
     "sanskrit-documents-atlas": "d",
-    "jain-quantum-atlas": "j",
+    "jain-elibrary-atlas": "j",
     "gretil-atlas": "g",
 }
 
@@ -493,17 +493,20 @@ def read_e_bharatisampat(tree: dict, tables: "Tables") -> list[dict]:
 
 
 # --------------------------------------------------------------------------
-# jain-quantum and gretil -- both publish the flat works+axes shape
+# jain-elibrary and gretil -- both publish the flat works+axes shape
 # --------------------------------------------------------------------------
 
-def read_jain_quantum(tree: dict, tables: "Tables") -> list[dict]:
-    """One record per catalogued item; those without a public text flagged.
+def read_jain_elibrary(tree: dict, tables: "Tables") -> list[dict]:
+    """One record per catalogued item; those without any text flagged.
 
     The id is the six-digit sr_no, from which search.js derives the Quantum
     viewer and booktext URLs (the latter also needs the title, carried as `t`).
-    Items with no Quantum text -- the post-2022 accessions and the scan-only
-    entries -- are indexed but flagged `po`, so the default view agrees with
-    the home page's text_count, exactly as E-bhāratīsampat's PDF-only works.
+    Text comes from Quantum's public booktext (`text: "quantum"`) or the
+    library's own OCR file (`text: "elibrary"`, behind its login): both count
+    as text, but only the first has a page to link, so `txt` -- the link -- is
+    set for Quantum alone. Items with neither (the post-July-2022 accessions)
+    are indexed but flagged `po`, so the default view agrees with the home
+    page's text_count, exactly as E-bhāratīsampat's PDF-only works.
     """
     out: list[dict] = []
     for w in tree.get("works") or []:
@@ -525,7 +528,7 @@ def read_jain_quantum(tree: dict, tables: "Tables") -> list[dict]:
             "g": [gid] if (gid := tables.path(
                 "j", [t for t in (w.get("domain"), w.get("sub_domain")) if t]
             )) is not None else None,
-            "txt": 1 if w.get("text") else None,
+            "txt": 1 if w.get("text") == "quantum" else None,
             "pdf": 1 if w.get("pdf") else None,
             "po": None if w.get("text") else 1,
         }))
@@ -567,7 +570,7 @@ READERS = {
     "sanskrit-documents-atlas": read_sanskrit_documents,
     "sanskrit-wikisource-atlas": read_wikisource,
     "e-bharatisampat-atlas": read_e_bharatisampat,
-    "jain-quantum-atlas": read_jain_quantum,
+    "jain-elibrary-atlas": read_jain_elibrary,
     "gretil-atlas": read_gretil,
 }
 

@@ -1,8 +1,8 @@
 {
-  "generated": "2026-10-09T00:11:17+00:00",
+  "generated": "2026-10-17T19:17:24+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
-  "total_texts": 22116,
-  "total_iast_bytes": 4787865656,
+  "total_texts": 22130,
+  "total_iast_bytes": 4908201886,
   "sized_atlases": 5,
   "atlases": [
     {
@@ -57,21 +57,21 @@
       "sourced": "2026-08-15"
     },
     {
-      "slug": "jain-quantum-atlas",
-      "name": "Jain Quantum",
-      "site": "jainqq.org",
-      "site_url": "https://jainqq.org",
-      "atlas_url": "https://tylergneill.github.io/jain-quantum-atlas",
-      "repo": "https://github.com/tylergneill/jain-quantum-atlas",
+      "slug": "jain-elibrary-atlas",
+      "name": "Jain eLibrary",
+      "site": "jainelibrary.org",
+      "site_url": "https://jainelibrary.org",
+      "atlas_url": "https://tylergneill.github.io/jain-elibrary-atlas",
+      "repo": "https://github.com/tylergneill/jain-elibrary-atlas",
       "noun": "texts",
-      "texts": 1961,
+      "texts": 2286,
       "nodes": 2465,
-      "iast_bytes": 1231928455,
-      "sized": 1961,
-      "avg_iast_bytes": 628214.4084650688,
+      "iast_bytes": 1418571754,
+      "sized": 2286,
+      "avg_iast_bytes": 620547.573928259,
       "pdfs": 2465,
       "last_changed": "2026-06-09",
-      "sourced": "2026-10-08"
+      "sourced": "2026-10-17"
     },
     {
       "slug": "gretil-atlas",
@@ -81,11 +81,11 @@
       "atlas_url": "https://tylergneill.github.io/gretil-atlas",
       "repo": "https://github.com/tylergneill/gretil-atlas",
       "noun": "texts",
-      "texts": 1123,
-      "nodes": 1123,
-      "iast_bytes": 283852718,
-      "sized": 1123,
-      "avg_iast_bytes": 252762.88334817454,
+      "texts": 812,
+      "nodes": 812,
+      "iast_bytes": 217545649,
+      "sized": 812,
+      "avg_iast_bytes": 267913.36083743843,
       "pdfs": 0,
       "last_changed": "2020-09-10",
       "sourced": "2025-11-30"

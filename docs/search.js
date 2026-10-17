@@ -103,10 +103,10 @@ const ATLASES = {
     light: "#1baf7a", dark: "#199e70", wave: "#38c793",
   },
   j: {
-    slug: "jain-quantum-atlas",
-    name: "Jain Quantum",
-    site: "jainqq.org",
-    url: "https://tylergneill.github.io/jain-quantum-atlas",
+    slug: "jain-elibrary-atlas",
+    name: "Jain eLibrary",
+    site: "jainelibrary.org",
+    url: "https://tylergneill.github.io/jain-elibrary-atlas",
     light: "#8e5bd6", dark: "#9b6ee0", wave: "#b48cf0",
   },
   g: {
@@ -676,7 +676,7 @@ const ATLAS_LOCAL_PORTS = {
   "sanskrit-wikisource-atlas": 8001,
   "e-bharatisampat-atlas": 8002,
   "sanskrit-documents-atlas": 8003,
-  "jain-quantum-atlas": 8004,
+  "jain-elibrary-atlas": 8004,
   "gretil-atlas": 8005,
 };
 

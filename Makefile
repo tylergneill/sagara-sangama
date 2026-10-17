@@ -121,7 +121,7 @@ ATLAS_ROOT ?= ../atlases
 WS  := $(ATLAS_ROOT)/sanskrit-wikisource-atlas
 EBS := $(ATLAS_ROOT)/e-bharatisampat-atlas
 SD  := $(ATLAS_ROOT)/sanskrit-documents-atlas
-JQ  := $(ATLAS_ROOT)/jain-quantum-atlas
+JEL := $(ATLAS_ROOT)/jain-elibrary-atlas
 GR  := $(ATLAS_ROOT)/gretil-atlas
 
 # --- Sanskrit Wikisource ----------------------------------------------------
@@ -259,45 +259,48 @@ sd-changelog:
 sd-audit:
 	$(MAKE) -C $(SD) audit-update-about
 
-# --- Jain Quantum -----------------------------------------------------------
-# Two catalogues, one text source. The jainelibrary.org API metadata under
+# --- Jain eLibrary -----------------------------------------------------------
+# Two catalogues, two text sources. The jainelibrary.org API metadata under
 # data/metadata_cache/jainelibrary/ came from a one-off pull and has no
-# fetcher in rivulet yet; everything below is the jainqq.org side.
+# fetcher in rivulet yet. Text: jainqq.org's public booktexts (jel-fetch-text),
+# and for the books Quantum lacks, the library's own OCR files, fetched once
+# with the owner's account from the Atlas itself (its `make fetch-ocr-docx`;
+# deliberately not wrapped here).
 
 # Cloudflare clearance for jainqq.org, earned in a separate visible Chrome.
 #   SECONDS, network, session-lived; the fetchers re-earn it when it lapses.
-jq-clearance:
-	$(MAKE) -C $(JQ) clearance $(if $(ARGS),ARGS="$(ARGS)")
+jel-clearance:
+	$(MAKE) -C $(JEL) clearance $(if $(ARGS),ARGS="$(ARGS)")
 
 # The 34-page catalog -> data/metadata_cache/jainqq/.
 #   ~34 requests, ~1.5 MIN, network.
-jq-fetch-catalog:
-	$(MAKE) -C $(JQ) fetch-catalog $(if $(ARGS),ARGS="$(ARGS)")
+jel-fetch-catalog:
+	$(MAKE) -C $(JEL) fetch-catalog $(if $(ARGS),ARGS="$(ARGS)")
 
 #   SECONDS, offline. Writes catalogue.jsonl and prints the language slices.
-jq-parse-catalog:
-	$(MAKE) -C $(JQ) parse-catalog
+jel-parse-catalog:
+	$(MAKE) -C $(JEL) parse-catalog
 
 # One booktext JSON per item with text, by language slice.
 #   sanskrit-only (default) ~1,974 requests, ~1.2h; any-sanskrit adds ~2,645.
-jq-fetch-text:
-	$(MAKE) -C $(JQ) fetch-text $(if $(ARGS),ARGS="$(ARGS)")
+jel-fetch-text:
+	$(MAKE) -C $(JEL) fetch-text $(if $(ARGS),ARGS="$(ARGS)")
 
 #   SECONDS, offline. Needs rivulet (the writer); the rules are the Atlas's.
-jq-extract-text:
-	$(MAKE) -C $(JQ) extract-text
+jel-extract-text:
+	$(MAKE) -C $(JEL) extract-text
 
 #   ~15 MIN single-threaded for the Sanskrit-only slice; WORKERS=n.
-jq-count-sizes:
-	$(MAKE) -C $(JQ) count-sizes $(if $(WORKERS),WORKERS=$(WORKERS))
+jel-count-sizes:
+	$(MAKE) -C $(JEL) count-sizes $(if $(WORKERS),WORKERS=$(WORKERS))
 
 #   SECONDS, offline. Also stamps docs/VERSION.
-jq-build:
-	$(MAKE) -C $(JQ) build
+jel-build:
+	$(MAKE) -C $(JEL) build
 
 #   SECONDS, offline.
-jq-changelog:
-	$(MAKE) -C $(JQ) changelog
+jel-changelog:
+	$(MAKE) -C $(JEL) changelog
 
 # --- GRETIL -----------------------------------------------------------------
 # Nothing to acquire: the collection is closed and every copy is on disk under
@@ -362,10 +365,10 @@ steps:
 	@echo "      make sd-fetch-metadata    minutes    ~108 requests"
 	@echo "      make sd-fetch-text        ~5.4h      ~9,781 requests"
 	@echo
-	@echo "    Jain Quantum -- needs Cloudflare clearance first"
-	@echo "      make jq-clearance         seconds    session-lived; re-earned automatically"
-	@echo "      make jq-fetch-catalog     ~1.5min    34 requests"
-	@echo "      make jq-fetch-text        ~1.2h      sanskrit-only slice (ARGS=\"--languages any-sanskrit\" adds ~1h40)"
+	@echo "    Jain eLibrary -- needs Cloudflare clearance first"
+	@echo "      make jel-clearance        seconds    session-lived; re-earned automatically"
+	@echo "      make jel-fetch-catalog    ~1.5min    34 requests"
+	@echo "      make jel-fetch-text       ~1.2h      sanskrit-only slice (ARGS=\"--languages any-sanskrit\" adds ~1h40)"
 	@echo
 	@echo "    GRETIL -- nothing to acquire; every copy is on disk"
 	@echo
@@ -396,12 +399,12 @@ steps:
 	@echo "      make sd-changelog         seconds              -> changelog.json"
 	@echo "      make sd-audit             ~1min      *         -> about.html"
 	@echo
-	@echo "    Jain Quantum"
-	@echo "      make jq-parse-catalog     seconds    cache     -> catalogue.jsonl"
-	@echo "      make jq-extract-text      seconds    cache     -> text_extract/ (rivulet)"
-	@echo "      make jq-count-sizes       ~15min     cache     -> sizes.jsonl (WORKERS=n)"
-	@echo "      make jq-build             seconds              -> tree.json, VERSION"
-	@echo "      make jq-changelog         seconds              -> changelog.json"
+	@echo "    Jain eLibrary"
+	@echo "      make jel-parse-catalog    seconds    cache     -> catalogue.jsonl"
+	@echo "      make jel-extract-text     seconds    cache     -> text_extract/ (rivulet)"
+	@echo "      make jel-count-sizes      ~15min     cache     -> sizes.jsonl (WORKERS=n)"
+	@echo "      make jel-build            seconds              -> tree.json, VERSION"
+	@echo "      make jel-changelog        seconds              -> changelog.json"
 	@echo
 	@echo "    GRETIL"
 	@echo "      make gr-inventory         seconds    checkouts -> inventory.jsonl"
@@ -458,14 +461,14 @@ serve-all:
 	@$(MAKE) --no-print-directory serve-one PORT=8001 DIR=$(ATLAS_ROOT)/sanskrit-wikisource-atlas
 	@$(MAKE) --no-print-directory serve-one PORT=8002 DIR=$(ATLAS_ROOT)/e-bharatisampat-atlas
 	@$(MAKE) --no-print-directory serve-one PORT=8003 DIR=$(ATLAS_ROOT)/sanskrit-documents-atlas
-	@$(MAKE) --no-print-directory serve-one PORT=8004 DIR=$(ATLAS_ROOT)/jain-quantum-atlas
+	@$(MAKE) --no-print-directory serve-one PORT=8004 DIR=$(ATLAS_ROOT)/jain-elibrary-atlas
 	@$(MAKE) --no-print-directory serve-one PORT=8005 DIR=$(ATLAS_ROOT)/gretil-atlas
 	@echo
 	@echo "  Sagarasangama         http://localhost:8000"
 	@echo "  sanskrit-wikisource   http://localhost:8001"
 	@echo "  e-bharatisampat       http://localhost:8002"
 	@echo "  sanskrit-documents    http://localhost:8003"
-	@echo "  jain-quantum          http://localhost:8004"
+	@echo "  jain-elibrary         http://localhost:8004"
 	@echo "  gretil                http://localhost:8005"
 	@echo
 	@echo "logs /tmp/sagara-serve-<port>.log -- stop with: make free-all-server-ports"
@@ -483,7 +486,7 @@ serve-all-fulltext:
 	@$(MAKE) --no-print-directory serve-one PORT=8001 DIR=$(ATLAS_ROOT)/sanskrit-wikisource-atlas SERVE_ARGS=--fulltext
 	@$(MAKE) --no-print-directory serve-one PORT=8002 DIR=$(ATLAS_ROOT)/e-bharatisampat-atlas SERVE_ARGS=--fulltext
 	@$(MAKE) --no-print-directory serve-one PORT=8003 DIR=$(ATLAS_ROOT)/sanskrit-documents-atlas SERVE_ARGS=--fulltext
-	@$(MAKE) --no-print-directory serve-one PORT=8004 DIR=$(ATLAS_ROOT)/jain-quantum-atlas SERVE_ARGS=--fulltext
+	@$(MAKE) --no-print-directory serve-one PORT=8004 DIR=$(ATLAS_ROOT)/jain-elibrary-atlas SERVE_ARGS=--fulltext
 	@$(MAKE) --no-print-directory serve-one PORT=8005 DIR=$(ATLAS_ROOT)/gretil-atlas SERVE_ARGS=--fulltext
 	@echo
 	@echo "  FULLTEXT MODE -- localhost only, NOT what the published site shows."

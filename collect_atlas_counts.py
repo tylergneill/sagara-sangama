@@ -113,12 +113,12 @@ ATLASES = (
         "noun": "texts",
     },
     {
-        "slug": "jain-quantum-atlas",
-        "name": "Jain Quantum",
-        "site": "jainqq.org",
-        "site_url": "https://jainqq.org",
-        "atlas_url": "https://tylergneill.github.io/jain-quantum-atlas",
-        "repo": "https://github.com/tylergneill/jain-quantum-atlas",
+        "slug": "jain-elibrary-atlas",
+        "name": "Jain eLibrary",
+        "site": "jainelibrary.org",
+        "site_url": "https://jainelibrary.org",
+        "atlas_url": "https://tylergneill.github.io/jain-elibrary-atlas",
+        "repo": "https://github.com/tylergneill/jain-elibrary-atlas",
         "noun": "texts",
     },
     {
