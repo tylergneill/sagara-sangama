@@ -1,7 +1,7 @@
 {
-  "generated": "2026-10-17T19:17:24+00:00",
+  "generated": "2026-10-17T23:08:07+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
-  "total_texts": 22130,
+  "total_texts": 22129,
   "total_iast_bytes": 4908201886,
   "sized_atlases": 5,
   "atlases": [
@@ -64,11 +64,11 @@
       "atlas_url": "https://tylergneill.github.io/jain-elibrary-atlas",
       "repo": "https://github.com/tylergneill/jain-elibrary-atlas",
       "noun": "texts",
-      "texts": 2286,
+      "texts": 2285,
       "nodes": 2465,
       "iast_bytes": 1418571754,
-      "sized": 2286,
-      "avg_iast_bytes": 620547.573928259,
+      "sized": 2285,
+      "avg_iast_bytes": 620819.1483588621,
       "pdfs": 2465,
       "last_changed": "2026-06-09",
       "sourced": "2026-10-17"

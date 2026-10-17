@@ -510,6 +510,10 @@ def read_jain_elibrary(tree: dict, tables: "Tables") -> list[dict]:
     """
     out: list[dict] = []
     for w in tree.get("works") or []:
+        # The tree also carries the Prakrit tier, for the Atlas's own "include
+        # Prakrit" pill; the aggregator counts the Sanskrit tier only.
+        if w.get("prakrit"):
+            continue
         sizes = w.get("sizes") or {}
         out.append(prune({
             "a": "j",
