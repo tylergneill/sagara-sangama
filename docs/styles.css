@@ -610,6 +610,8 @@ a[target="_blank"]::after{
 }
 .g-switch-btn:first-child{ border-radius: 4px 0 0 4px; }
 .g-switch-btn:last-child{ border-radius: 0 4px 4px 0; }
+/* A one-button switch (the "combined" toggle) is both ends at once. */
+.g-switch-btn:only-child{ border-radius: 4px; }
 .g-switch-btn + .g-switch-btn{ border-left: none; }
 .g-switch-btn:hover{ background: color-mix(in srgb, currentColor 8%, transparent); }
 /* EBS hardcodes #fff on the active segment; here the accent is a light gold in
