@@ -42,7 +42,12 @@ const SERIES = [
 const state = { metric: "texts", granularity: 12, mode: "cumulative",
                 // Slugs the reader has switched off, and which collection the
                 // x axis starts at ("" = all of them).
-                hidden: new Set(), from: "" };
+                hidden: new Set(), from: "",
+                // "separate": a line per collection; "combined": one line, the
+                // sum of the collections still switched on.
+                view: "separate" };
+
+const COMBINED = "combined";
 
 const gnf = new Intl.NumberFormat("en-US");
 const gnf1 = new Intl.NumberFormat("en-US", { minimumFractionDigits: 1,
@@ -194,6 +199,46 @@ function diff(points) {
   return out;
 }
 
+/* The collections switched on, summed into one monthly series.
+
+   Summed monthly, before grouping: `group` keeps each series' own opening
+   point, so adding grouped series would add points that are not on one grid.
+   Each collection is carried forward over months it does not report and
+   counts zero before it begins -- it held nothing yet, which is what a
+   running total says. A collection with no byte figure for a month adds
+   nothing to the byte sum for it rather than blanking the whole month. */
+function combine(raw, slugs) {
+  const entries = slugs.map((slug) => raw.get(slug)).filter(Boolean);
+  if (!entries.length) return [];
+  const first = Math.min(...entries.map((e) => monthIndex(e.points[0].date)));
+  const last = Math.max(...entries.map((e) => monthIndex(e.points[e.points.length - 1].date)));
+  const byMonth = entries.map((e) => new Map(e.points.map((p) => [monthIndex(p.date), p])));
+  const held = entries.map(() => null);
+  const out = [];
+  for (let m = first; m <= last; m++) {
+    let texts = 0, bytes = 0, anyBytes = false;
+    byMonth.forEach((months, i) => {
+      if (months.has(m)) held[i] = months.get(m);
+      const p = held[i];
+      if (!p) return;
+      texts += p.texts || 0;
+      if (p.bytes != null) { bytes += p.bytes; anyBytes = true; }
+    });
+    const date = `${Math.floor(m / 12)}-${String(m % 12 + 1).padStart(2, "0")}-01`;
+    out.push({ date, texts, bytes: anyBytes ? bytes : null });
+  }
+  return out;
+}
+
+/* The combined line's colour: the page's own text colour, read live so it
+   follows the theme. Neutral on purpose -- every series colour already names
+   one collection, and the sum is none of them. */
+function combinedSpec() {
+  const ink = getComputedStyle(document.documentElement).getPropertyValue("--text").trim()
+    || "#16191d";
+  return { slug: COMBINED, light: ink, dark: ink, wave: ink };
+}
+
 /* A round number at or above `n`, plus the step between gridlines. The top
    tick is a labelled round figure rather than the raw maximum, so the tallest
    line ends at a number the axis actually prints. */
@@ -253,19 +298,31 @@ function draw(data, host) {
 
   // Every series that has data, hidden or not: the legend lists them all, so a
   // switched-off collection keeps a key to switch back on.
+  const shape = (monthly) => {
+    const clipped = monthly.filter((p) => monthIndex(p.date) >= anchor);
+    const points = group(clipped, state.granularity)
+      .map((p) => ({ x: monthIndex(p.date), y: metricOf(p), date: p.date }))
+      .filter((p) => p.x != null && p.y != null);
+    return state.mode === "added" ? diff(points) : points;
+  };
   const all = [];
   for (const spec of SERIES) {
     const entry = raw.get(spec.slug);
     if (!entry) continue;
-    const clipped = entry.points.filter((p) => monthIndex(p.date) >= anchor);
-    const points = group(clipped, state.granularity)
-      .map((p) => ({ x: monthIndex(p.date), y: metricOf(p), date: p.date }))
-      .filter((p) => p.x != null && p.y != null);
-    const shaped = state.mode === "added" ? diff(points) : points;
+    const shaped = shape(entry.points);
     if (shaped.length) all.push({ ...spec, name: entry.name, points: shaped });
   }
 
-  const series = all.filter((s) => !state.hidden.has(s.slug));
+  const included = all.filter((s) => !state.hidden.has(s.slug));
+  const combined = state.view === "combined";
+  let series = included;
+  if (combined && included.length) {
+    const points = shape(combine(raw, included.map((s) => s.slug)));
+    series = points.length
+      ? [{ ...combinedSpec(), name: "Combined", points,
+           mended: included.some((s) => isMended(s.slug)) }]
+      : [];
+  }
 
   host.innerHTML = "";
   if (!series.length) {
@@ -341,7 +398,8 @@ function draw(data, host) {
      such ceiling: the radius can be as generous as it likes, and the boundary
      between two handles simply falls halfway between them. Handled on the svg
      in `attachHover`, which is already tracking the pointer. */
-  const handles = series.map((s) => ({
+  // None on the combined line: it has no collection of its own to start at.
+  const handles = combined ? [] : series.map((s) => ({
     slug: s.slug, name: s.name,
     cx: sx(s.points[0].x), cy: sy(s.points[0].y),
     on: state.from === s.slug,
@@ -400,9 +458,12 @@ function draw(data, host) {
 
   // Hidden series park below the visible ones, in the order they are declared,
   // so a label does not jump around as collections are switched on and off.
+  // Combined, every collection parks under the one line as its switch: lit
+  // if it is in the sum, dimmed if not.
   const lastVisible = ends.length ? ends[ends.length - 1].y : PAD.top;
-  const parked = all.filter((s) => state.hidden.has(s.slug))
-    .map((s, i) => ({ s, x: labelX, y: lastVisible + LEAD * (i + 1), off: true }));
+  const parked = all.filter((s) => combined || state.hidden.has(s.slug))
+    .map((s, i) => ({ s, x: labelX, y: lastVisible + LEAD * (i + 1),
+                      off: state.hidden.has(s.slug), member: combined }));
   const stack = [...ends, ...parked];
   for (let i = 1; i < stack.length; i++) {
     stack[i].y = Math.max(stack[i].y, stack[i - 1].y + LEAD);
@@ -411,14 +472,18 @@ function draw(data, host) {
     ? stack[stack.length - 1].y - (PAD.top + plotH) : 0;
   if (overrun > 0) for (const e of stack) e.y -= overrun;
 
-  lastShown = ends.length;
+  lastShown = combined ? included.length : ends.length;
   for (const e of stack) {
+    const isSum = e.s.slug === COMBINED;
     const label = el("text", { x: e.x + 8, y: e.y + 4,
                                class: e.off ? "g-end-label g-end-off" : "g-end-label",
-                               fill: colorOf(e.s), "data-slug": e.s.slug },
-      isMended(e.s.slug) ? `${e.s.name}*` : e.s.name);
-    label.appendChild(el("title", {}, e.off
-      ? `Show ${e.s.name}` : `Hide ${e.s.name}`));
+                               fill: colorOf(e.s), ...(isSum ? {} : { "data-slug": e.s.slug }) },
+      (isSum ? e.s.mended : isMended(e.s.slug)) ? `${e.s.name}*` : e.s.name);
+    if (!isSum) {
+      label.appendChild(el("title", {}, e.member
+        ? (e.off ? `Add ${e.s.name} to the sum` : `Leave ${e.s.name} out of the sum`)
+        : (e.off ? `Show ${e.s.name}` : `Hide ${e.s.name}`)));
+    }
     svg.appendChild(label);
   }
 
@@ -585,7 +650,10 @@ fetch(G_URL)
         const btn = ev.target.closest("button[data-axis]");
         if (!btn) return;
         const { axis, value } = btn.dataset;
-        state[axis] = axis === "granularity" ? Number(value) : value;
+        // "combined" is a single on/off button rather than a pair: a second
+        // labelled group pushed the controls onto two rows.
+        if (axis === "view") state.view = state.view === value ? "separate" : value;
+        else state[axis] = axis === "granularity" ? Number(value) : value;
         render(data);
       });
     }
