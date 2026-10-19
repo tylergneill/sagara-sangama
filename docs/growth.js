@@ -265,7 +265,8 @@ function draw(data, host) {
   for (const spec of SERIES) {
     const atlas = (data.atlases || []).find((a) => a.slug === spec.slug);
     if (!atlas || !atlas.points) continue;
-    raw.set(spec.slug, { name: atlas.name, points: mend(spec.slug, atlas.points) });
+    raw.set(spec.slug, { name: atlas.name, points: mend(spec.slug, atlas.points),
+                         textMade: atlas.text_made ? monthIndex(atlas.text_made) : null });
   }
 
   /* Every line runs to the newest month any collection reports. A series that
@@ -310,7 +311,8 @@ function draw(data, host) {
     const entry = raw.get(spec.slug);
     if (!entry) continue;
     const shaped = shape(entry.points);
-    if (shaped.length) all.push({ ...spec, name: entry.name, points: shaped });
+    if (shaped.length) all.push({ ...spec, name: entry.name, points: shaped,
+                                  textMade: entry.textMade });
   }
 
   const included = all.filter((s) => !state.hidden.has(s.slug));
@@ -379,11 +381,24 @@ function draw(data, host) {
       String(Math.floor(x / 12))));
   }
 
+  /* A series that dates its works by accession while their text was made
+     later (Jain eLibrary: `text_made`, the library's one OCR batch) is dotted
+     up to the first point on or after that day and solid from there: before
+     it the line counts books that were online but not yet text. The dotted
+     run ends ON that point so the two halves join. The combined line stays
+     solid -- one collection's caveat would otherwise dot the whole sum. */
+  const pathOf = (pts) => pts.map((p, i) => `${i ? "L" : "M"}${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`).join("");
   for (const s of series) {
-    const d = s.points.map((p, i) => `${i ? "L" : "M"}${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`).join("");
-    svg.appendChild(el("path", { d, fill: "none", stroke: colorOf(s),
-                                 "stroke-width": 2, "stroke-linejoin": "round",
-                                 "stroke-linecap": "round" }));
+    const cut = s.textMade == null ? 0 : s.points.findIndex((p) => p.x >= s.textMade);
+    const runs = cut > 0 ? [[s.points.slice(0, cut + 1), true], [s.points.slice(cut), false]]
+               : cut < 0 ? [[s.points, true]] : [[s.points, false]];
+    for (const [pts, dotted] of runs) {
+      if (pts.length < 2) continue;
+      svg.appendChild(el("path", { d: pathOf(pts), fill: "none", stroke: colorOf(s),
+                                   "stroke-width": 2, "stroke-linejoin": "round",
+                                   "stroke-linecap": "round",
+                                   ...(dotted ? { "stroke-dasharray": "0.1 4.5" } : {}) }));
+    }
   }
 
   /* A grab handle on each line's first point: click it and the axis starts

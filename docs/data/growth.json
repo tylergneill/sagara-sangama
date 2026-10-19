@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-17T23:08:08+00:00",
+  "generated": "2026-10-18T22:01:37+00:00",
   "note": "cumulative text counts and IAST bytes from each Atlas's docs/data/changelog.json; each in its own periodicity",
   "span": {
     "from": "1992-07-01",
@@ -2948,6 +2948,7 @@
       "name": "Jain eLibrary",
       "granularity": "month",
       "undated_works": 119,
+      "text_made": "2022-07-30",
       "points": [
         {
           "date": "2007-01-01",
