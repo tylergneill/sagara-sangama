@@ -170,6 +170,11 @@ def read_atlas(spec: dict, root: Path) -> dict:
         # ends below the Atlas's own total instead of looking short by mistake.
         if data.get("undated_works"):
             out["undated_works"] = data["undated_works"]
+        # The day this Atlas's texts were made, where its series dates works
+        # by accession and the text came later (Jain eLibrary: the library's
+        # one OCR batch). The chart draws the stretch before it dotted.
+        if data.get("text_made"):
+            out["text_made"] = data["text_made"]
     elif isinstance(data, list):
         points = _points_from_entries(data, spec.get("stats_key"))
         out["granularity"] = "month"
