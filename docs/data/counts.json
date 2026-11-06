@@ -1,9 +1,9 @@
 {
-  "generated": "2026-11-17T16:25:02+00:00",
+  "generated": "2026-11-19T17:59:44+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
-  "total_texts": 19291,
-  "total_iast_bytes": 3319214297,
-  "sized_atlases": 3,
+  "total_texts": 22388,
+  "total_iast_bytes": 4955331700,
+  "sized_atlases": 5,
   "atlases": [
     {
       "slug": "sanskrit-wikisource-atlas",
@@ -55,6 +55,40 @@
       "pdfs": 887,
       "last_changed": null,
       "sourced": "2026-11-16"
+    },
+    {
+      "slug": "jain-elibrary-atlas",
+      "name": "Jain eLibrary",
+      "site": "jainelibrary.org",
+      "site_url": "https://jainelibrary.org",
+      "atlas_url": "https://tylergneill.github.io/jain-elibrary-atlas",
+      "repo": "https://github.com/tylergneill/jain-elibrary-atlas",
+      "noun": "texts",
+      "texts": 2285,
+      "nodes": 2465,
+      "iast_bytes": 1418571754,
+      "sized": 2285,
+      "avg_iast_bytes": 620819.1483588621,
+      "pdfs": 2465,
+      "last_changed": "2026-06-09",
+      "sourced": "2026-10-17"
+    },
+    {
+      "slug": "gretil-atlas",
+      "name": "GRETIL",
+      "site": "gretil.sub.uni-goettingen.de",
+      "site_url": "https://tylergneill.github.io/gretil-mirror/gretil.html",
+      "atlas_url": "https://tylergneill.github.io/gretil-atlas",
+      "repo": "https://github.com/tylergneill/gretil-atlas",
+      "noun": "texts",
+      "texts": 812,
+      "nodes": 812,
+      "iast_bytes": 217545649,
+      "sized": 812,
+      "avg_iast_bytes": 267913.36083743843,
+      "pdfs": 0,
+      "last_changed": "2020-09-10",
+      "sourced": "2025-11-30"
     }
   ]
 }
