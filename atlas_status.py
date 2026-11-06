@@ -349,7 +349,7 @@ def ebharatisampat(root):
     r = Report("E-bhāratīsampat", root)
     if not r.present:
         return r
-    r.artifact("catalogue", "data/catalogue.jsonl", step="ebs-fetch-metadata")
+    r.artifact("catalogue", "data/catalogue.jsonl", step="ebs-walk-shelves")
 
     # The denominator is works that HAVE text, not catalogue rows.
     #
