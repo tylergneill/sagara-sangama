@@ -15,7 +15,7 @@ calls a text -- and each says so in `all_stats.text_count`.  The walks below
 reproduce that number exactly, which is the check that this file is reading
 each collection the way its own Atlas does:
 
-    sanskrit-documents   9756 documents            == all_stats.text_count
+    sanskrit-documents   9754 documents            == all_stats.text_count
     wikisource           3805 pages + Index items  == all_stats.text_count
     e-bharatisampat     11066 works                 > all_stats.text_count 5491
 
@@ -275,6 +275,12 @@ def read_sanskrit_documents(tree: dict, tables: "Tables") -> list[dict]:
             seen.add(doc_id)
 
             stats = p.get("stats") or {}
+            # The same rule as wikisource's walk: index what the Atlas counts
+            # as a text. Two metadata-only pages (siddhasarasvatIstotram2,
+            # viShNorapAmArjanastotram) carry text_count 0 since that Atlas's
+            # empty-page fix, and listing them would offer a reader nothing.
+            if (stats.get("text_count") or 0) < 1:
+                continue
             out.append(prune({
                 "a": "d",
                 "t": p.get("title"),
