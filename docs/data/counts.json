@@ -1,8 +1,8 @@
 {
-  "generated": "2026-11-06T15:07:58+00:00",
+  "generated": "2026-11-09T16:33:45+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
-  "total_texts": 19032,
-  "total_iast_bytes": 3272084483,
+  "total_texts": 19068,
+  "total_iast_bytes": 3277567598,
   "sized_atlases": 3,
   "atlases": [
     {
@@ -13,14 +13,14 @@
       "atlas_url": "https://tylergneill.github.io/sanskrit-wikisource-atlas",
       "repo": "https://github.com/tylergneill/sanskrit-wikisource-atlas",
       "noun": "texts",
-      "texts": 3749,
-      "nodes": 26793,
-      "iast_bytes": 818009605,
+      "texts": 3785,
+      "nodes": 26829,
+      "iast_bytes": 823492720,
       "sized": null,
-      "avg_iast_bytes": 218194.07975460123,
+      "avg_iast_bytes": 217567.42932628797,
       "pdfs": 543,
-      "last_changed": "2026-09-30T17:37:13Z",
-      "tree_mtime": "2026-11-06T14:58:01+00:00"
+      "last_changed": "2026-10-31T17:57:38Z",
+      "tree_mtime": "2026-11-09T14:43:57+00:00"
     },
     {
       "slug": "e-bharatisampat-atlas",
@@ -37,7 +37,7 @@
       "avg_iast_bytes": 419868.4311810454,
       "pdfs": 9421,
       "last_changed": null,
-      "tree_mtime": "2026-11-06T15:05:11+00:00"
+      "tree_mtime": "2026-11-09T16:33:41+00:00"
     },
     {
       "slug": "sanskrit-documents-atlas",
