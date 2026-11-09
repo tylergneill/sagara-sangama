@@ -463,6 +463,10 @@ def read_e_bharatisampat(tree: dict, tables: "Tables") -> list[dict]:
             # its server keys on the SERIAL, while `i` here is the base64
             # bookid. The other two reuse a field they already store.
             "lt": str(w["serial"]) if (w.get("has_text") and w.get("serial")) else None,
+            # The readers' `bookid` encodes the serial, not `i` (since the
+            # site's November 2026 rebuild), so search.js needs it on every
+            # item, not just the ones with local text.
+            "s": str(w["serial"]) if w.get("serial") else None,
             "b": sizes.get("transliterated_bytes"),
             "d": parse_loose_date(w.get("uploaded")),
             "au": w.get("author"),
@@ -480,6 +484,8 @@ def read_e_bharatisampat(tree: dict, tables: "Tables") -> list[dict]:
             # table of contents exists; `readbook3` is one flat text. Nothing
             # else in the catalogue carries a signal about internal navigation.
             "toc": 1 if kind == "read_chapter" else None,
+            # On the site's "AI-converted books" shelf: unproofread text.
+            "ai": 1 if w.get("ai_converted") else None,
             "txt": 1 if kind else None,
             "pdf": 1 if w.get("pdf") else None,
             # No reader endpoint means no Unicode text behind this entry: a
