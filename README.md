@@ -8,6 +8,9 @@ Sāgarasaṅgama sums over them.
 
 Served at https://sagarasangama.info.
 
+**Paper (preprint):** Tyler Neill, "Sāgarasaṅgama: Fathoming the Sanskrit
+E-Text Oceans", ISCLS 9 (2027) — [PDF](paper/tylerneill_iscls2027.pdf).
+
 `CLAUDE.md` has the refresh shape, the rate terms, and the growth chart's known
 traps. The rest of this file covers what the site is and how to run it.
 
