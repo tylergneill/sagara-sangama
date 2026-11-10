@@ -333,6 +333,9 @@ function searchKey(it, idx) {
     if (it.t) { parts.push(it.t.toLowerCase()); parts.push(fold(it.t)); }
     if (it.n) parts.push(it.n);
     if (it.au) { parts.push(it.au.toLowerCase()); parts.push(fold(it.au)); }
+    // E-bhāratīsampat's romanized/English title (search only, never shown).
+    // fold() turns its hyphens into spaces, so split-word queries match.
+    if (it.te) parts.push(fold(it.te));
     // \u001f between fields so a match cannot straddle two of them and be
     // scored as though it were one word. The title's own two forms ride along
     // so scoring never has to re-fold: this runs 24627 times per keystroke.

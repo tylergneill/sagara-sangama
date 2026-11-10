@@ -470,6 +470,9 @@ def read_e_bharatisampat(tree: dict, tables: "Tables") -> list[dict]:
             "b": sizes.get("transliterated_bytes"),
             "d": parse_loose_date(w.get("uploaded")),
             "au": w.get("author"),
+            # The site's own romanized (sometimes English) title. Search only,
+            # never displayed: ad-hoc ASCII with typos and mixed spellings.
+            "te": w.get("title_eg"),
             "y": str(w["publish_year"]) if w.get("publish_year") else None,
             "pub": w.get("publisher"),
             "ed": w.get("editor"),
