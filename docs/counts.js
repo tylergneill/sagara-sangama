@@ -103,11 +103,12 @@ fetch("./data/counts.json")
         }
       }
 
-      // Per-atlas snapshot date, blank where the Atlas reports none -- a date
-      // is a claim about currency, and a wrong one is worse than none.
+      // When each Atlas last sourced its collection (its own `sourced`
+      // stamp), blank where it reports none -- a date is a claim about
+      // currency, and a wrong one is worse than none.
       const dateEl = box.querySelector(".atlas-date");
       if (dateEl) {
-        const when = monthYear(atlas.tree_mtime);
+        const when = monthYear(atlas.sourced);
         dateEl.textContent = when ? `as of ${when}` : "";
       }
     }
