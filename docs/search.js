@@ -130,9 +130,15 @@ const DOWNLOAD_SUFFIXES = {
   "Sanskrit PDF": "-sa.pdf",
 };
 
-/* One constant pageno across every readbook3 link in the corpus -- a
-   session/view token, not a page number. From the Atlas's app.js. */
-const EB_READBOOK_PAGENO = "MjI0MjQyNjk5NTk=";
+/* The readers' `bookid` since the site's November 2026 rebuild: the serial,
+   base64-encoded five times with the string reversed between rounds. Same as
+   the Atlas's app.js `readerId`. */
+function ebReaderId(serial) {
+  if (!serial) return null;
+  let e = String(serial);
+  for (let i = 0; i < 4; i++) e = btoa(e).split("").reverse().join("");
+  return btoa(e);
+}
 
 /* How many rows to put in the DOM at once. The index holds 24627 items and an
    empty query matches all of them; rendering that many rows locks the page up
@@ -203,16 +209,17 @@ function rehydrate(data) {
     } else if (it.a === "e") {
       it.u = `${EB_SITE}/readSearch.php?id=${it.i}`;
       it.fmtLinks = [];
-      if (it.txt) {
+      const rid = ebReaderId(it.s);
+      if (it.txt && rid) {
         it.fmtLinks.push({
           label: "text",
           href: it.toc
-            ? `${EB_SITE}/read_chapter.php?bookid=${it.i}`
-            : `${EB_SITE}/readbook3.php?bookid=${it.i}&pageno=${EB_READBOOK_PAGENO}`,
+            ? `${EB_SITE}/read_chapter?bookid=${rid}`
+            : `${EB_SITE}/readbook3?bookid=${rid}`,
         });
       }
-      if (it.pdf) {
-        it.fmtLinks.push({ label: "PDF", href: `${EB_SITE}/ebook/index.php?bookid=${it.i}` });
+      if (it.pdf && rid) {
+        it.fmtLinks.push({ label: "PDF", href: `${EB_SITE}/ebook_pdf?bookid=${rid}` });
       }
     } else {
       it.fmtLinks = [];   // wikisource stores its url whole
@@ -326,6 +333,9 @@ function searchKey(it, idx) {
     if (it.t) { parts.push(it.t.toLowerCase()); parts.push(fold(it.t)); }
     if (it.n) parts.push(it.n);
     if (it.au) { parts.push(it.au.toLowerCase()); parts.push(fold(it.au)); }
+    // E-bhāratīsampat's romanized/English title (search only, never shown).
+    // fold() turns its hyphens into spaces, so split-word queries match.
+    if (it.te) parts.push(fold(it.te));
     // \u001f between fields so a match cannot straddle two of them and be
     // scored as though it were one word. The title's own two forms ride along
     // so scoring never has to re-fold: this runs 24627 times per keystroke.
@@ -500,6 +510,9 @@ function metaBits(it) {
   // at the front where they are scanned for.
   if (it.toc) bits.push("TOC");
   if (it.pf) bits.push("proofing");
+  // e-bhāratīsampat's unproofread texts, shelved there as "AI-converted
+  // books". Spelled out: this line has no hover text to explain a bare "AI".
+  if (it.ai) bits.push("AI-converted");
   // Wikisource's scans are .pdf, .djvu and .tif alike, so "PDF only" would be
   // wrong there; e-bhāratīsampat's really are all PDFs.
   if (it.po) bits.push(it.a === "w" ? "image only" : "PDF only");

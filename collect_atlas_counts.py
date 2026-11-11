@@ -166,8 +166,11 @@ def read_atlas(spec: dict, root: Path) -> dict:
 
     # the Atlas's own notion of currency, where it keeps one
     out["last_changed"] = stats.get("last_changed")
-    out["tree_mtime"] = datetime.fromtimestamp(
-        path.stat().st_mtime, timezone.utc).isoformat(timespec="seconds")
+    # When the Atlas last fetched its collection, as the Atlas itself stamps
+    # it. Not the file's modification time: a checkout, pull or rebuild
+    # rewrites tree.json without any new sourcing, which once showed every
+    # Atlas as current (Sanskrit Documents as "Nov 2026" for data from Aug).
+    out["sourced"] = stats.get("sourced")
     return out
 
 
@@ -214,7 +217,7 @@ def main() -> None:
             return format(v, fmt) if v else "--".rjust(width)
 
         print(f"  {'atlas':26} {'texts':>8} {'IAST MB':>9} {'avg KB':>8} "
-              f"{'PDFs':>8}   snapshot")
+              f"{'PDFs':>8}   sourced")
         for a in result["atlases"]:
             if "error" in a:
                 print(f"  {a['name']:26} {a['error']}")
@@ -222,7 +225,7 @@ def main() -> None:
             print(f"  {a['name']:26} {a['texts']:>8,} "
                   f"{num(a['iast_bytes'] and a['iast_bytes'] / 1e6, '>9,.1f', 9)} "
                   f"{num(a['avg_iast_bytes'] and a['avg_iast_bytes'] / 1e3, '>8,.1f', 8)} "
-                  f"{num(a['pdfs'], '>8,', 8)}   {a['tree_mtime'][:10]}")
+                  f"{num(a['pdfs'], '>8,', 8)}   {a.get('sourced') or '-'}")
         total_mb = (result["total_iast_bytes"] or 0) / 1e6
         print(f"  {'total':26} {result['total_texts']:>8,} "
               f"{total_mb:>9,.1f}"
