@@ -50,6 +50,17 @@ STATUS_COLOUR = {"ok": "32", "ok?": "33", "stale": "33",
                  "partial": "33", "missing": "31"}
 
 
+def _walk(path, pattern):
+    """Files under `path`, skipping dotfiles.
+
+    Finder writes `.DS_Store` into any folder it opens, so a cache browsed once
+    on 2026-10-01 reported that day as its age and marked everything derived
+    from it stale. Nothing a pipeline writes starts with a dot.
+    """
+    return (p for p in path.rglob(pattern)
+            if p.is_file() and not p.name.startswith("."))
+
+
 def newest(path, pattern="*"):
     """Newest mtime under `path`, or None. Directories are walked; a plain
     file answers for itself."""
@@ -57,7 +68,7 @@ def newest(path, pattern="*"):
         return None
     if path.is_file():
         return path.stat().st_mtime
-    times = [p.stat().st_mtime for p in path.rglob(pattern) if p.is_file()]
+    times = [p.stat().st_mtime for p in _walk(path, pattern)]
     return max(times) if times else None
 
 
@@ -67,7 +78,7 @@ def count(path, pattern="*"):
     if path.is_file():
         with path.open(encoding="utf-8", errors="replace") as handle:
             return sum(1 for line in handle if line.strip())
-    return sum(1 for p in path.rglob(pattern) if p.is_file())
+    return sum(1 for _ in _walk(path, pattern))
 
 
 def stamp(mtime):
