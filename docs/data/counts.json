@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-16T21:45:16+00:00",
+  "generated": "2026-11-16T22:40:38+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
   "total_texts": 19291,
   "total_iast_bytes": 3319214297,
@@ -52,7 +52,7 @@
       "iast_bytes": 135259893,
       "sized": null,
       "avg_iast_bytes": 13617.22470552703,
-      "pdfs": 872,
+      "pdfs": 887,
       "last_changed": null,
       "sourced": "2026-11-16"
     }
