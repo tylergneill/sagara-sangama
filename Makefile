@@ -1,7 +1,7 @@
 .PHONY: serve-fulltext serve-all serve-all-fulltext counts growth search data logo scroll serve free-server-port \
         get-server-ip-address serve-all serve-one free-all-server-ports status \
         ws-dump ws-process ws-backfill ws-changelog ws-audit \
-        ebs-clearance ebs-fetch-metadata ebs-parse-metadata ebs-fetch-text ebs-count-sizes ebs-build ebs-changelog ebs-audit \
+        ebs-clearance ebs-walk-shelves ebs-fetch-metadata ebs-parse-metadata ebs-fetch-text ebs-count-sizes ebs-build ebs-changelog ebs-audit \
         sd-fetch-metadata sd-build-catalogue sd-fetch-text sd-parse-site sd-parse-listings sd-count-sizes sd-build sd-changelog sd-audit \
         steps
 
@@ -165,7 +165,13 @@ ws-audit:
 ebs-clearance:
 	$(MAKE) -C $(EBS) clearance $(if $(ARGS),ARGS="$(ARGS)")
 
-# The catalogue walk: ~11,066 requests at one per 2s.
+# Walk the three shelves (E-Books, Unicode Books, AI-converted books): the
+# complete list of items, with their essential fields.
+#   5–15 min, network, ~150 requests. Rerun the same day to resume.
+ebs-walk-shelves:
+	$(MAKE) -C $(EBS) walk-shelves $(if $(ARGS),ARGS="$(ARGS)")
+
+# One metadata page per item: ~11,066 requests at one per 2s.
 #   ~6.5h, network. Ctrl-C stops cleanly and a rerun resumes from the cache,
 #   with the progress bar picking up at the cached count.
 #   ARGS="--limit 50" for a bounded taste.
@@ -291,6 +297,7 @@ steps:
 	@echo
 	@echo "    E-bharatisampat -- needs clearance first"
 	@echo "      make ebs-clearance        seconds    session-lived; rerun when it lapses"
+	@echo "      make ebs-walk-shelves     5–15 min   ~150 requests"
 	@echo "      make ebs-fetch-metadata   ~6.5h      ~11,066 requests"
 	@echo "      make ebs-fetch-text       hours      budget by MAX_REQUESTS"
 	@echo

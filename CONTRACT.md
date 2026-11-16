@@ -113,6 +113,7 @@ From `all_stats` in each `tree.json`:
 | `sized` | — | how many works the byte figures cover; below `text_count` means the totals are a floor. Collected, not currently shown |
 | `pdf_count` | PDFs | works with a scan, deduplicated |
 | `last_changed` | currency | the Atlas's own notion, where it keeps one |
+| `sourced` | "as of" date | ISO date of the Atlas's last fetch of its collection, stamped by the Atlas; shown rounded to the month. Never substitute the file's modification time, which any checkout rewrites |
 
 Averages divide by `text_count`, never by `sized`: this layer counts items with
 searchable text, so "how long is a text here" is the question, not "how far has
