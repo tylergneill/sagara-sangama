@@ -1,8 +1,8 @@
 {
-  "generated": "2026-11-16T16:20:21+00:00",
+  "generated": "2026-11-16T21:45:16+00:00",
   "note": "text_count from each Atlas's docs/data/tree.json all_stats; snapshot figures, not live",
-  "total_texts": 19112,
-  "total_iast_bytes": 3316576726,
+  "total_texts": 19291,
+  "total_iast_bytes": 3319214297,
   "sized_atlases": 3,
   "atlases": [
     {
@@ -47,14 +47,14 @@
       "atlas_url": "https://tylergneill.github.io/sanskrit-documents-atlas",
       "repo": "https://github.com/tylergneill/sanskrit-documents-atlas",
       "noun": "texts",
-      "texts": 9754,
-      "nodes": 9756,
-      "iast_bytes": 132622322,
+      "texts": 9933,
+      "nodes": 9935,
+      "iast_bytes": 135259893,
       "sized": null,
-      "avg_iast_bytes": 13596.711297929054,
-      "pdfs": 873,
+      "avg_iast_bytes": 13617.22470552703,
+      "pdfs": 872,
       "last_changed": null,
-      "sourced": "2026-08-15"
+      "sourced": "2026-11-16"
     }
   ]
 }
