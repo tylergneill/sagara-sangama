@@ -97,20 +97,16 @@ class Report:
         self.present = root.exists()
 
     def artifact(self, label, rel, inputs=(), step=None, pattern="*",
-                 covers=None, extra_inputs=()):
+                 covers=None):
         """One derived file: does it exist, and is it older than its inputs?
 
         `covers` is an optional "what this file actually spans" note -- for a
         changelog, the last month it plots. Worth showing even when the row is
         fresh, because that is the number a reader compares against the chart.
 
-        `inputs` are relative to this report's own root, which is the ordinary
-        case: a step reads the caches of the Atlas it belongs to. `extra_inputs`
-        are `(name, absolute path)` pairs, for the one derivation that crosses
-        a repo boundary -- the parent's files, which read the Atlases' published
-        trees and changelogs. They are named explicitly because the basenames
-        collide: three `tree.json` in three repos, and "older than tree.json"
-        would not say whose.
+        `inputs` are relative to this report's own root: a step reads the
+        caches of the Atlas it belongs to. The parent's rows, which cross a
+        repo boundary, are judged by build dates instead -- see `aggregate`.
         """
         path = self.root / rel
         mine = newest(path)
@@ -122,10 +118,6 @@ class Report:
             theirs = newest(self.root / src)
             if theirs is not None and theirs > mine:
                 stale_against.append(Path(src).name)
-        for name, abs_path in extra_inputs:
-            theirs = newest(abs_path)
-            if theirs is not None and theirs > mine:
-                stale_against.append(name)
         if stale_against:
             # Just the reason. `covers` says what the file spans, which matters
             # when the row is otherwise fine -- beside "older than its input"
@@ -185,6 +177,48 @@ class Report:
             # "1 file" said nothing "ok" had not already said.
             self.rows.append(("ok", label, when, "", ""))
 
+    def aggregate(self, label, rel, atlases, step=None):
+        """One of the parent's files, judged by BUILD DATES, never mtimes.
+
+        It is stale when any Atlas was built after it: an Atlas's
+        `__data_version__` later than the aggregate's own `generated` stamp.
+        A tie counts as current -- rebuilding the parent after the Atlases on
+        the same day is update hygiene, not something this can see.
+
+        Not mtimes, because git sets a file's mtime whenever a checkout or pull
+        writes it. On 2026-11-17 a `git pull` here two minutes after one in
+        sanskrit-documents made August aggregates look newer than a November
+        tree, and every row read `ok`.
+
+        `atlases` is `(slug, Atlas root)` pairs.
+        """
+        path = self.root / rel
+        if not path.exists():
+            self.rows.append(("missing", label, "--", step or "", ""))
+            return
+        built = generated_on(path)
+        if built is None:
+            self.rows.append(("ok?", label, "--", step or "",
+                              "no `generated` stamp to compare"))
+            return
+        newer, unknown = [], []
+        for slug, root in atlases:
+            if not root.exists():
+                continue
+            theirs = data_version(root)
+            if theirs is None:
+                unknown.append(slug.removesuffix("-atlas"))
+            elif theirs > built:
+                newer.append(f"{slug.removesuffix('-atlas')} ({theirs})")
+        if newer:
+            self.rows.append(("stale", label, built, step or "",
+                              "older than the build of " + ", ".join(newer)))
+        elif unknown:
+            self.rows.append(("ok?", label, built, "",
+                              "no __data_version__ for " + ", ".join(unknown)))
+        else:
+            self.rows.append(("ok", label, built, "", ""))
+
     def print(self):
         head = f"  {self.name}"
         print(f"\n{_c('1', head)}")
@@ -204,6 +238,36 @@ class Report:
             if step:
                 tail = f"{tail}   → make {step}" if tail else f"→ make {step}"
             print(line + DIM(tail) if tail else line.rstrip())
+
+
+def data_version(root):
+    """An Atlas's `__data_version__` from its docs/VERSION -- the date its
+    pipeline last ran, which is its latest touch -- or None."""
+    path = root / "docs/VERSION"
+    if not path.exists():
+        return None
+    for line in path.read_text(encoding="utf-8").splitlines():
+        key, _, value = line.partition("=")
+        if key.strip() == "__data_version__":
+            return value.strip().strip("'\"") or None
+    return None
+
+
+def generated_on(path):
+    """The local date an aggregate was built, from its own `generated` stamp.
+
+    `generated` is UTC; it is shifted to local time because `__data_version__`
+    is stamped from the local date, and the two are compared as dates.
+    """
+    import datetime
+    try:
+        with path.open(encoding="utf-8") as handle:
+            stamp_ = json.load(handle).get("generated")
+        when = datetime.datetime.fromisoformat(stamp_)
+    except (OSError, json.JSONDecodeError, AttributeError, TypeError,
+            ValueError):
+        return None
+    return when.astimezone().date().isoformat()
 
 
 def dump_month(root):
@@ -473,27 +537,15 @@ def main():
     # Atlas and there is no point reporting them as fresh when a tree they read
     # has not been built.
     parent = Report("Sāgarasaṅgama (here)", ROOT)
-    # Named inputs, because these three are the only rows whose sources live in
-    # ANOTHER repo. Declared with no inputs at all they could never read as
-    # stale -- the same empty-comparison bug the Wikisource changelog row was
-    # built to avoid -- so all three sat green while the Atlas trees they
-    # aggregate were rebuilt days later.
-    #
-    # counts and search read every Atlas's tree.json; growth reads every
-    # changelog.json. The slugs come from ATLASES above, so an Atlas added
-    # there is picked up here without a second list to keep in step.
-    slugs = [name for name, _ in ATLASES]
-    trees = [(f"{slug.removesuffix('-atlas')} tree.json",
-              args.atlas_root / slug / "docs/data/tree.json")
-             for slug in slugs]
-    changelogs = [(f"{slug.removesuffix('-atlas')} changelog.json",
-                   args.atlas_root / slug / "docs/data/changelog.json")
-                  for slug in slugs]
-    for label, rel, sources in (
-            ("counts.json", "docs/data/counts.json", trees),
-            ("growth.json", "docs/data/growth.json", changelogs),
-            ("search.json", "docs/data/search.json", trees)):
-        parent.artifact(label, rel, step="data", extra_inputs=sources)
+    # Every Atlas is an input to all three: counts and search read each
+    # tree.json, growth each changelog.json, and an Atlas's build date stands
+    # for both. The slugs come from ATLASES above, so an Atlas added there is
+    # picked up here without a second list to keep in step.
+    atlases = [(name, args.atlas_root / name) for name, _ in ATLASES]
+    for label, rel in (("counts.json", "docs/data/counts.json"),
+                       ("growth.json", "docs/data/growth.json"),
+                       ("search.json", "docs/data/search.json")):
+        parent.aggregate(label, rel, atlases, step="data")
     parent.print()
 
     # `reports + [parent]`, not `reports`: the parent's rows could not be
