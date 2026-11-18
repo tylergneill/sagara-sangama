@@ -5,7 +5,8 @@ aggregates by build dates (`atlas_status.py`, `Report.aggregate`), not mtimes.
 
 Two changes to the same stamping code in every Atlas, so they go together:
 **meaning** (stamp on change, not on run) and **precision** (the minute, not
-the day).
+the day). A third, Atlas-side only, reuses both: an **audit stamp** for the
+About page (§3), which sangama never reads.
 
 ## Background
 
@@ -80,6 +81,41 @@ Round with `value.slice(0, 10)`. That gives the UTC day, which can differ from
 the reader's local day near midnight. That's acceptable for this label.
 Converting to local time is also fine if a page already formats dates that way.
 
+## 3. An audit stamp, for the Atlas's own About page
+
+**Each Atlas also stamps `__audit_version__`: when its published audit last
+changed.** Sangama never reads it. It exists because the audit can change
+without any file the parent reads changing, and then no date on the page moves.
+
+The case that raised it: on 2026-11-18 sanskrit-documents' audit gained two
+findings (from its change log) and stopped truncating long lists. That rewrote
+the About page's Data Quality section, but touched neither `tree.json` nor
+`changelog.json`, so under §1 `__data_version__` correctly stays put, and the
+page still showed the previous day's date beside an audit that changed today.
+
+Same rules as `__data_version__`:
+
+- **Stamp on change, not on run.** The audit writer (`audit.py
+  --update-about`, `make audit-update-about`) holds both the rendered region
+  and what the page currently carries. Identical: skip the write, keep the
+  stamp. Different: write and restamp. A rerun on unchanged data is a no-op.
+  What counts as the audit's output is the audit region plus its `data-stat`
+  figures.
+- **The minute, in UTC, in `docs/VERSION`**, beside the other stamps, so dates
+  still live in one file. People see the day.
+- **Shown beside the audit itself** (sanskrit-documents: under
+  "Opportunities for Correction"), labelled e.g. "audit last changed", not
+  "audit last run".
+
+Not to be confused with what the findings describe: the data they were
+computed from is already dated (the fetch, and per-probe dates such as scan
+liveness's "Checked <month>"). This stamp answers "when did this page's audit
+last change", which is a property of the code as much as the data.
+
+**Not consumed by sangama, and not part of `make status`.** Atlases adopt it
+when they adopt §1, since it reuses the same write-or-skip machinery; the
+validators in §2 need to accept it too.
+
 ## Sangama's side (mostly free)
 
 `generated` is already an ISO UTC timestamp to the second, so no collector
@@ -104,8 +140,8 @@ instants:
 ## Done when
 
 All five Atlases stamp on change and to the minute, their validators accept the
-format, every page rounds to the day under the new label, `aggregate` compares
-instants, and two checks pass:
+format, every page rounds to the day under the new label, each About page shows
+its audit stamp (§3), `aggregate` compares instants, and two checks pass:
 
 - a no-op rebuild leaves the parent `ok`;
 - a same-day afternoon rebuild that changes output shows `stale`.
